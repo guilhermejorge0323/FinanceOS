@@ -1,2 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "@tailwindcss/typography";
+
+@theme {
+  /* Globais */
+    --color-primary-green: #10b981;
+  /* Introduction page */
+  --color-primary-black-introduction: #080d14;
+}
