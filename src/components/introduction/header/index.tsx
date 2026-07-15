@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/ui/container';
 import { Logo } from '@/components/ui/logo';
-import { HeaderIntroductionButton } from '@/components/introduction/header/PrimaryButton';
+import { IntroductionButton } from '@/components/introduction/PrimaryButton';
 import { ArrowUpRightIcon, MenuIcon } from 'lucide-react';
 import clsx from 'clsx';
 import { IntroductionHeaderLinks } from './IntroductionHeaderLinks';
@@ -15,8 +15,8 @@ export function IntroductionHeader() {
   return (
     <header
       className={clsx(
-        'w-full h-16',
-        'fixed top-0',
+        'w-full h-16 mb-20',
+        'fixed top-0 z-10',
         'bg-primary-black-introduction/80 backdrop-blur-md',
         'border-b border-white/5',
       )}
@@ -30,10 +30,17 @@ export function IntroductionHeader() {
           </div>
 
           <div className='flex justify-end'>
-            <HeaderIntroductionButton className='hidden lg:flex items-center gap-2'>
+            <IntroductionButton
+              className={clsx(
+                'hidden lg:flex items-center gap-2',
+                'px-4 py-2',
+                'rounded-xl border border-primary-green',
+                'text-primary-green hover:text-white hover:bg-primary-green',
+              )}
+            >
               Entrar
               <ArrowUpRightIcon className='w-3.5 h-3.5' />
-            </HeaderIntroductionButton>
+            </IntroductionButton>
 
             <div className='lg:hidden flex items-center'>
               <button onClick={() => setMenuState(!menuState)}>

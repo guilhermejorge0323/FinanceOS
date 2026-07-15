@@ -5,3 +5,12 @@ lg:	1024px	Laptops / Monitores normais
 xl:	1280px	Monitores Grandes / Desktops
 
 
+<div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full blur-[120px] opacity-20" style="background: radial-gradient(rgb(16, 185, 129) 0%, transparent 70%);"></div>
+
+
+<div classname="absolute -bottom-10 left-1/2 -translate-x-1/2 w-3/4 h-20 blur-3xl opacity-30 bg-[#10b981] "></div>
+
+
+group flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#10b981] text-white font-semibold text-sm hover:bg-[#059669] transition-all duration-200 shadow-lg shadow-[#10b981]/30 hover:shadow-[#10b981]/50 hover:scale-[1.02] active:scale-[0.98]
+
+lucide lucide-arrow-up-right group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform
