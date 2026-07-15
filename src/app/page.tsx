@@ -1,9 +1,9 @@
-import { Section1 } from '@/components/introduction/section1';
+import { IntroductionSection1 } from '@/components/Introduction/IntroductionSection1';
 
 export default function Home() {
   return (
     <>
-      <Section1 />
+      <IntroductionSection1 />
     </>
   );
 }

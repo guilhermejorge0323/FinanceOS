@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/ui/container';
 import { IntroductionHeaderLinks } from '../IntroductionHeaderLinks';
-import { IntroductionButton } from '../../PrimaryButton';
+import { IntroductionButton } from '../../ui/PrimaryButton';
 import clsx from 'clsx';
 
 export function ResponsiveIntroductionMenu() {

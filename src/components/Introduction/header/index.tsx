@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/ui/container';
 import { Logo } from '@/components/ui/logo';
-import { IntroductionButton } from '@/components/introduction/PrimaryButton';
+import { IntroductionButton } from '@/components/Introduction/ui/PrimaryButton';
 import { ArrowUpRightIcon, MenuIcon } from 'lucide-react';
 import clsx from 'clsx';
 import { IntroductionHeaderLinks } from './IntroductionHeaderLinks';

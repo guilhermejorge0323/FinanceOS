@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { IntroductionButton } from '../../../PrimaryButton';
+import { IntroductionButton } from '../../../ui/PrimaryButton';
 import { ArrowUpRightIcon } from 'lucide-react';
 
 export function LineButtonsS1() {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { IntroductionHeader } from '@/components/introduction/header';
+import { IntroductionHeader } from '@/components/Introduction/header';
 
 export const metadata: Metadata = {
   title: 'FinanceOS',
@@ -13,12 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang='pt-br'
-      className={`h-full`}
-    >
+    <html lang='pt-br' className={`h-full`}>
       <body className='min-h-full flex flex-col bg-primary-black-introduction text-white overflow-x-hidden'>
-        <IntroductionHeader/>
+        <IntroductionHeader />
         {children}
       </body>
     </html>

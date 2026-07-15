@@ -1,4 +1,4 @@
-import { IntroductionTitle } from '../../IntroductionTitle';
+import { IntroductionTitle } from '../../ui/IntroductionTitle';
 import { LineButtonsS1 } from './LineButtonsS1';
 
 export function AreaTextsS1() {
