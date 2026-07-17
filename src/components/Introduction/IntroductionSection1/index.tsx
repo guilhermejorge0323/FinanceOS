@@ -4,7 +4,7 @@ import { AreaImageS1 } from './AreaImageS1';
 
 export function IntroductionSection1() {
   return (
-    <section className='mt-36 mb-20'>
+    <section className='mt-36 mb-18'>
       <Container className='flex-col'>
         <AreaTextsS1 />
 

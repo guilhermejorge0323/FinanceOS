@@ -1,5 +1,3 @@
-'use client';
-
 import { cn } from "@/utils/mergeTailwind";
 import { ComponentProps } from "react";
 

@@ -1,22 +1,26 @@
 import { cn } from '@/utils/mergeTailwind';
-import { ComponentProps, ReactNode } from 'react';
+import { ComponentProps, ElementType, ReactNode } from 'react';
 
-type IntroductionTitleProps = {
+
+type IntroductionTitleProps<T extends ElementType = 'h1'> = {
+  as?: T;
   children: ReactNode;
-} & ComponentProps<'h1'>;
+} & Omit<ComponentProps<T>, 'as'>;
 
-export function IntroductionTitle({
+export function IntroductionTitle<T extends ElementType = 'h1'>({
+  as,
   children,
   className,
-}: IntroductionTitleProps) {
+  ...props
+}: IntroductionTitleProps<T>) {
+  const Component = as || 'h1';
+
   return (
-    <h1
-      className={cn(
-        'font-bold text-white',
-        className,
-      )}
+    <Component
+      className={cn('font-bold text-white text-center', className)}
+      {...props}
     >
       {children}
-    </h1>
+    </Component>
   );
 }
