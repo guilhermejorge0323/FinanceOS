@@ -8,16 +8,17 @@ export function AreaButtonS4() {
     <Container className='flex-col items-center gap-6'>
       <IntroductionButton
         className={clsx(
-          'flex items-center gap-2',
+          'flex items-center gap-2.5 text-sm',
           'text-white',
-          'px-6 py-3.5',
+          'px-8 py-4',
           'bg-primary-green',
-          'shadow-lg shadow-primary-green/30',
+          'shadow-xl shadow-primary-green/30',
           'hover:bg-[#059669] hover:shadow-primary-green/50 hover:scale-[1.02] transition-all group',
+          'shadow-xl shadow-primary-green/30 hover:shadow-primary-green/50'
         )}
       >
         Começar Agora — É Grátis
-        <ArrowUpRightIcon className='w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform' />
+        <ArrowUpRightIcon className='w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform' />
       </IntroductionButton>
 
       <p className='text-xs text-white/25'>Sem cartão de crédito · Cancele quando quiser</p>
