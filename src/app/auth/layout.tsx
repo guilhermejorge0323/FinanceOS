@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import './globals.css';
-
+import '../globals.css';
 
 export const metadata: Metadata = {
   title: 'FinanceOS',
@@ -13,10 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='pt-br' className={`h-full scroll-smooth`}>
-      <body className='min-h-full flex flex-col overflow-x-hidden'>
-        {children}
-      </body>
-    </html>
+    <div className=' min-h-screen text-white'>
+      <main>{children}</main>
+    </div>
   );
 }

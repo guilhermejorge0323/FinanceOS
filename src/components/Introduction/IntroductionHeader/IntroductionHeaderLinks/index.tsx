@@ -8,11 +8,11 @@ export function IntroductionHeaderLinks({className}: ComponentProps<'a'>) {
 
   return (
     <>
-      <a href='' className={buttonClasses}>
+      <a href='#resources' className={buttonClasses}>
         Recursos
       </a>
 
-      <a href='' className={buttonClasses}>
+      <a href='#how-it-works' className={buttonClasses}>
         Como funciona
       </a>
     </>
