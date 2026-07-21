@@ -2,9 +2,20 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  /* Globais */
-    --color-primary-green: #10b981;
+  /* Globals */
+  --color-primary-green: #10b981;
   /* Introduction page */
   --color-primary-black-introduction: #080d14;
-  --color-primary-orange-introduction: #D97706;
+  --color-primary-orange-introduction: #d97706;
+
+  /* Auth page */
+  --color-primary-blue-auth: #0f172a;
+}
+
+@layer utilities {
+  .bg-auth-glow {
+    background-image:
+      radial-gradient(at 20% 80%, rgba(16, 185, 129, 0.25) 0%, transparent 60%),
+      radial-gradient(at 80% 20%, rgba(59, 130, 246, 0.25) 0%, transparent 60%);
+  }
 }
