@@ -6,7 +6,7 @@ type IntroductionButtonProps = {
   children: ReactNode;
 } & ComponentProps<'button'>;
 
-export function IntroductionButton({
+export function PrimaryButton({
   children,
   className,
   ...props

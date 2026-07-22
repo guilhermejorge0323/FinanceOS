@@ -1,11 +1,11 @@
 import clsx from 'clsx';
-import { IntroductionButton } from '../../../ui/PrimaryButton';
+import { PrimaryButton } from '../../../../ui/PrimaryButton';
 import { ArrowUpRightIcon } from 'lucide-react';
 
 export function LineButtonsS1() {
   return (
     <div className='flex justify-center items-center flex-col md:flex-row gap-3'>
-      <IntroductionButton
+      <PrimaryButton
         className={clsx(
           'flex items-center gap-2',
           'text-white',
@@ -17,9 +17,9 @@ export function LineButtonsS1() {
       >
         Começar Agora — É Grátis
         <ArrowUpRightIcon className='w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform' />
-      </IntroductionButton>
+      </PrimaryButton>
 
-      <IntroductionButton
+      <PrimaryButton
         className={clsx(
           'flex justify-center w-34',
           'text-white/70',
@@ -30,7 +30,7 @@ export function LineButtonsS1() {
         )}
       >
         Ver Recursos
-      </IntroductionButton>
+      </PrimaryButton>
     </div>
   );
 }
