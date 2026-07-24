@@ -2,8 +2,9 @@
 
 import { AuthProvider } from './AuthContext';
 import { AuthFormSelector } from './AuthFormSelector';
-import { RegisterForm } from './AuthFormSelector/RegisterForm';
-import { LoginForm } from './LoginForm';
+import { LoginForm } from './Forms/LoginForm';
+import { RegisterForm } from './Forms/RegisterForm';
+
 
 export function AuthContent() {
   return (

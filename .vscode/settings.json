@@ -38,5 +38,6 @@
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "standard.enable": false
+  "standard.enable": false,
+  "cSpell.words": ["carregando"]
 }
