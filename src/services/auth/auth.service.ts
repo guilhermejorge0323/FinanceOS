@@ -36,6 +36,21 @@ export class AuthService {
   static async login(credentials: LoginInput) {
     const { email, password } = credentials;
 
-    
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user || !user.passwordHash) {
+      throw new Error('Email ou senha invalidos');
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isValidPassword) {
+      throw new Error('Email ou senha invalidos');
+    }
+
+    const { passwordHash: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }
