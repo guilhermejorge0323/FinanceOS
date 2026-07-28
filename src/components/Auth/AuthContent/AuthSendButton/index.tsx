@@ -30,6 +30,7 @@ export function AuthSendButton({
         'hover:opacity-90 disabled:opacity-60 transition-opacity',
         'cursor-pointer',
         'flex items-center justify-center gap-2',
+        'dark:bg-primary-green'
       )}
       {...props}
     >

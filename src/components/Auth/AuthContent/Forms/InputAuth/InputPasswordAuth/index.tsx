@@ -13,7 +13,7 @@ export function InputPasswordAuth() {
   }
 
   return (
-    <div className='flex flex-col gap-1.5'>
+    <div className='flex flex-col gap-1.5 dark:text-white'>
       <div className='flex justify-between'>
         <label className='font-medium text-sm' htmlFor={idInput}>
           Senha
@@ -33,6 +33,7 @@ export function InputPasswordAuth() {
             'bg-input-background border border-slate-300 rounded-xl',
             'text-sm outline-none',
             'focus:border-primary-green focus:ring-2 focus:ring-primary-green/20',
+            'dark:dark:border-border-color dark:bg-secondary-dark-background',
             'transition-all',
           )}
           type={typeInput}

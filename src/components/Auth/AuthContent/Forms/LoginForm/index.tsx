@@ -1,9 +1,8 @@
 import { MailIcon } from 'lucide-react';
-import { useAuth } from '../../AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { InputAuth } from '../InputAuth';
 import { InputPasswordAuth } from '../InputAuth/InputPasswordAuth';
 import { AuthSendButton } from '../../AuthSendButton';
-
 
 export function LoginForm() {
   const { activeTab } = useAuth();
@@ -20,7 +19,7 @@ export function LoginForm() {
       />
       <InputPasswordAuth />
 
-      <AuthSendButton >AAAAAa</AuthSendButton>
+      <AuthSendButton>Entrar</AuthSendButton>
     </form>
   );
 }

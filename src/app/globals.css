@@ -1,9 +1,21 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Globals */
   --color-primary-green: #10b981;
+
+  /* Dark */
+  --color-primary-dark-background: #0b1120;
+  --color-secondary-dark-background: #1e293b;
+  --color-primary-dark-card: #111827;
+  --color-border-color: #ffffff14;
+
+  /* Dark text */
+  --color-primary-text-dark: #94a3b8;
+
   /* Introduction page */
   --color-primary-black-introduction: #080d14;
   --color-primary-orange-introduction: #d97706;

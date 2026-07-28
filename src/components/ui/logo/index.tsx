@@ -40,7 +40,7 @@ export function Logo({ size = 'md', className, ...props }: LogoProps) {
       {...props}
     >
       <div className={cn('bg-primary-green flex items-center justify-center ', currentSize.iconBox)}>
-        <WalletIcon className={currentSize.icon} />
+        <WalletIcon className={`${currentSize.icon} text-white`} />
       </div>
       <h1 className={cn('font-bold tracking-tight', currentSize.text)}>
         FinanceOS

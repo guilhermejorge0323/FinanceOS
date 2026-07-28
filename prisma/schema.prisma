@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String?
+  email        String        @unique
+  passwordHash String?       @map("password_hash")
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  // Relacionamentos
+  categories      Category[]
+  transactions    Transaction[]
+  budgets         Budget[]
+  financialScores FinancialScore[]
+  dashCards       UserDashCard[]
+  aiInsights      AiInsight[]
+
+  @@map("users")
+}
+
+model Category {
+  id     Int    @id @default(autoincrement())
+  userId String? @map("user_id")
+  name   String
+  type   String // 'income' ou 'outcome'
+  icon   String
+
+  // Relacionamentos
+  user         User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+  dashCards    UserDashCard[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  categoryId  Int      @map("category_id")
+  description String
+  amount      Decimal  @db.Decimal(10, 2)
+  type        String   // 'income' ou 'outcome'
+  date        DateTime @db.Date
+  isScheduled Boolean  @default(false) @map("is_scheduled")
+  isPaid      Boolean  @default(true) @map("is_paid")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relacionamentos
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("transactions")
+}
+
+model Budget {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  categoryId      Int      @map("category_id")
+  amountAllocated Decimal  @map("amount_allocated") @db.Decimal(10, 2)
+  monthYear       String   @map("month_year") // Ex: '07-2026'
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relacionamentos
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("budgets")
+}
+
+model FinancialScore {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  score     Int      // 0 a 100
+  monthYear String   @map("month_year") // Ex: '07-2026'
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("financial_scores")
+}
+
+model UserDashCard {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  title            String
+  cardType         String   @map("card_type") // 'income', 'outcome', 'goal', 'limit'
+  targetAmount     Decimal? @map("target_amount") @db.Decimal(10, 2)
+  filterCategoryId Int?     @map("filter_category_id")
+  positionIndex    Int      @map("position_index")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relacionamentos
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filterCategory Category? @relation(fields: [filterCategoryId], references: [id], onDelete: SetNull)
+
+  @@map("user_dash_cards")
+}
+
+model AiInsight {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  monthYear   String   @map("month_year")
+  insightType String   @map("insight_type") // 'attention', 'goal', 'tip'
+  title       String
+  content     String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_insights")
+}

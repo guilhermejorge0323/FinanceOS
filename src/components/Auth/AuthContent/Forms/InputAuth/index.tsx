@@ -21,7 +21,7 @@ export function InputAuth({
   const idInput = useId();
 
   return (
-      <div className='flex flex-col gap-1.5'>
+      <div className='flex flex-col gap-1.5 dark:text-white'>
         <label className='font-medium text-sm' htmlFor={idInput}>
           {label}
         </label>
@@ -35,6 +35,7 @@ export function InputAuth({
               'text-sm outline-none',
               'focus:border-primary-green focus:ring-2 focus:ring-primary-green/20',
               'transition-all',
+              'dark:border-border-color dark:bg-secondary-dark-background',
               className,
             )}
             type={type}
