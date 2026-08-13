@@ -14,7 +14,7 @@ export function AuthContent() {
   return (
     <section
       className={clsx(
-        'flex-1 bg-slate-100 p-8 flex justify-center items-center relative',
+        'flex-1 bg-primary-background p-8 flex justify-center items-center relative',
         'dark:bg-primary-dark-background',
       )}
     >
@@ -22,10 +22,14 @@ export function AuthContent() {
         <ThemeButton />
       </div>
 
-      <div className='w-full max-w-sm text-primary-blue-auth'>
+      <div className='w-full max-w-sm text-primary-blue'>
         <div className='flex justify-center lg:hidden'>
-          <Logo size='lg' className='mb-10 text-primary-blue-auth dark:text-white' />
+          <Logo
+            size='lg'
+            className='mb-10 text-primary-blue dark:text-white'
+          />
         </div>
+
         <AuthProvider>
           <AuthFormSelector />
           <LoginForm />

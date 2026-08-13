@@ -6,6 +6,8 @@
 @theme {
   /* Globals */
   --color-primary-green: #10b981;
+  --color-primary-background: #f0f4f8;
+  --color-primary-blue: #0f172a;
 
   /* Dark */
   --color-primary-dark-background: #0b1120;
@@ -21,7 +23,13 @@
   --color-primary-orange-introduction: #d97706;
 
   /* Auth page */
-  --color-primary-blue-auth: #0f172a;
+
+  /* Home */
+  --color-primary-home: #f1f5f9;
+  --color-muted: #e2e8f0;
+  --color-text-sidebar: #f8fafc;
+  --color-muted-gray: #64748b;
+  --color-border-home: #0f172a1a;
 }
 
 @layer utilities {

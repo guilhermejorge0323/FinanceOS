@@ -11,6 +11,25 @@ datasource db {
   provider = "postgresql"
 }
 
+enum NotificationType {
+  ALERT
+  AI
+  BILLING
+}
+
+enum ScheduledTaskType {
+  SALARY
+  RECURRING_BILL
+  GOAL_CHECK
+  AI_SCORE_UPDATE
+}
+
+enum ScheduledTaskStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
 model User {
   id           String        @id @default(cuid())
   name         String?
@@ -25,15 +44,16 @@ model User {
   financialScores FinancialScore[]
   dashCards       UserDashCard[]
   aiInsights      AiInsight[]
+  notifications   Notification[]
 
   @@map("users")
 }
 
 model Category {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   userId String? @map("user_id")
   name   String
-  type   String // 'income' ou 'outcome'
+  type   String  // 'income' ou 'outcome'
   icon   String
 
   // Relacionamentos
@@ -122,4 +142,20 @@ model AiInsight {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("ai_insights")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  title     String
+  type      NotificationType
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now()) @map("created_at")
+  expiresAt DateTime?        @map("expires_at")
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("notifications")
 }

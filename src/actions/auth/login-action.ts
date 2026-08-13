@@ -5,7 +5,7 @@ import { LoginInput, loginSchema } from '@/schemas/auth/auth.schema';
 import { AuthService } from '@/services/auth/auth.service';
 import { redirect } from 'next/navigation';
 
-export type ActionResponse = {
+type ActionResponse = {
   success?: boolean;
   errors?: Record<string, string>;
   message?: string;
@@ -46,5 +46,5 @@ export async function loginAction(data: LoginInput): Promise<ActionResponse> {
       message: 'Erro ao realizar login. Tente novamente.',
     };
   }
-  redirect('/dashboard');
+  redirect('/home');
 }

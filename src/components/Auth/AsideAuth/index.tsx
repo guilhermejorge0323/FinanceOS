@@ -4,7 +4,7 @@ import { ShieldCheckIcon } from "lucide-react";
 
 export function AsideAuth() {
   return (
-    <aside className='hidden lg:flex w-130 flex-col justify-between bg-primary-blue-auth  text-white p-12 bg-auth-glow'>
+    <aside className='hidden lg:flex w-130 flex-col justify-between bg-primary-blue  text-white p-12 bg-auth-glow'>
       <Logo size='lg' />
 
       <AreaAsideText />

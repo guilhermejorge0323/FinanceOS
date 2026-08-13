@@ -1,11 +1,14 @@
 'use client';
 
-import clsx from 'clsx';
+import { cn } from '@/utils/mergeTailwind';
 import { MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { ComponentProps, useEffect, useState } from 'react';
+import { SecondaryButton } from '../ui/SecondaryButton';
 
-export function ThemeButton() {
+type ThemeButtonProps = {}
+
+export function ThemeButton({ className }: ComponentProps<'button'>) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -18,29 +21,27 @@ export function ThemeButton() {
   }
 
   return (
-    <button
-      className={clsx(
+    <SecondaryButton
+      className={cn(
         'flex items-center gap-1.5',
         'px-3 py-1.5',
-        'rounded-full border border-border-color',
-        'bg-white',
-        ' transition-all duration-200',
-        'text-sm font-medium text-[#64748b]',
-        'dark:bg-primary-dark-card dark:text-primary-text-dark'
+        'text-sm hover:text-black',
+        'dark:hover:text-white',
+        className
       )}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
     >
       {theme === 'dark' ? (
         <>
-          <MoonIcon className='w-3.5 h-3.5 text-slate-700'/>
-          Escuro
+          <MoonIcon className='w-3.5 h-3.5'/>
+          <span className='hidden lg:inline'>Escuro</span>
         </>
       ) : (
         <>
           <SunIcon className='w-3.5 h-3.5' />
-          Claro
+          <span className='hidden lg:inline'>Claro</span>
         </>
       )}
-    </button>
+    </SecondaryButton>
   );
 }

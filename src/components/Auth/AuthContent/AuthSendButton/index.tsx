@@ -25,7 +25,7 @@ export function AuthSendButton({
     disabled={disabled || isPending}
       className={clsx(
         'w-full py-2.5',
-        'bg-primary-blue-auth rounded-xl',
+        'bg-primary-blue rounded-xl',
         'text-white font-medium text-sm disabled:text-slate-200',
         'hover:opacity-90 disabled:opacity-60 transition-opacity',
         'cursor-pointer',
