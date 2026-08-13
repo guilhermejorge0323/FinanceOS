@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -31,11 +29,11 @@ enum ScheduledTaskStatus {
 }
 
 model User {
-  id           String        @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String?
-  email        String        @unique
-  passwordHash String?       @map("password_hash")
-  createdAt    DateTime      @default(now()) @map("created_at")
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
 
   // Relacionamentos
   categories      Category[]
@@ -45,6 +43,7 @@ model User {
   dashCards       UserDashCard[]
   aiInsights      AiInsight[]
   notifications   Notification[]
+  scheduledTasks  ScheduledTask[]
 
   @@map("users")
 }
@@ -53,7 +52,7 @@ model Category {
   id     Int     @id @default(autoincrement())
   userId String? @map("user_id")
   name   String
-  type   String  // 'income' ou 'outcome'
+  type   String // 'income' ou 'outcome'
   icon   String
 
   // Relacionamentos
@@ -71,7 +70,7 @@ model Transaction {
   categoryId  Int      @map("category_id")
   description String
   amount      Decimal  @db.Decimal(10, 2)
-  type        String   // 'income' ou 'outcome'
+  type        String // 'income' ou 'outcome'
   date        DateTime @db.Date
   isScheduled Boolean  @default(false) @map("is_scheduled")
   isPaid      Boolean  @default(true) @map("is_paid")
@@ -102,7 +101,7 @@ model Budget {
 model FinancialScore {
   id        String   @id @default(cuid())
   userId    String   @map("user_id")
-  score     Int      // 0 a 100
+  score     Int // 0 a 100
   monthYear String   @map("month_year") // Ex: '07-2026'
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -158,4 +157,19 @@ model Notification {
 
   @@index([userId, expiresAt])
   @@map("notifications")
+}
+
+model ScheduledTask {
+  id        String              @id @default(cuid())
+  userId    String              @map("user_id")
+  type      ScheduledTaskType
+  payload   Json
+  executeAt DateTime            @map("execute_at")
+  status    ScheduledTaskStatus @default(PENDING)
+  createdAt DateTime            @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([executeAt, status])
+  @@map("scheduled_tasks")
 }

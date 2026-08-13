@@ -1,3 +1,2 @@
-- As notificacoes ao serem disparadas precisam revalidar o cache, entao deve pegar o id do user no JWT
-
-- Como as notificacoes vao ser personalizadas entao criar uma funcao para emitir
+- Certo pecisamos que a aplicacao rode em 2 plano
+    . Quando o usuario fazer um agendamento 
