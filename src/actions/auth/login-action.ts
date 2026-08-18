@@ -5,7 +5,7 @@ import { LoginInput, loginSchema } from '@/schemas/auth/auth.schema';
 import { AuthService } from '@/services/auth/auth.service';
 import { redirect } from 'next/navigation';
 
-type ActionResponse = {
+export type ActionResponse = {
   success?: boolean;
   errors?: Record<string, string>;
   message?: string;
