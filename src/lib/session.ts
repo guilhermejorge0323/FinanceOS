@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 const Secret_Key = new TextEncoder().encode(process.env.JWT_SECRET);
 
 type SessionPayload = {
+  name?: string | null;
   userId: string;
   email: string;
 };
@@ -29,9 +30,15 @@ export async function decrypt(token: string) {
   }
 }
 
-export async function createSession(userId: string, email: string) {
+export async function createSession(
+  name: string | null,
+  userId: string,
+  email: string,
+) {
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-  const token = await encrypt({ userId, email });
+
+  const formatedName = name || 'usuário';
+  const token = await encrypt({ name, userId, email });
 
   const cookieStore = await cookies();
   cookieStore.set('session', token, {

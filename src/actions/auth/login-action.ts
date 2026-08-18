@@ -32,7 +32,7 @@ export async function loginAction(data: LoginInput): Promise<ActionResponse> {
   try {
     const user = await AuthService.login(validation.data);
 
-    await createSession(user.id, user.email);
+    await createSession(user.name,user.id, user.email);
   } catch (error) {
     if (error instanceof Error) {
       return {

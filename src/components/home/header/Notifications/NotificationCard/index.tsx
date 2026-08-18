@@ -3,22 +3,23 @@ import { Notification, NotificationType } from '@prisma/client';
 import clsx from 'clsx';
 import { Loader2 } from 'lucide-react';
 
-import { use, useEffect, useState } from 'react';
-
 const notificationIconMap: Record<NotificationType, string> = {
   AI: '🤖',
   BILLING: '💵',
   ALERT: '⚠️',
+  GOAL: '🎯',
 };
 
 type NotificationCardProps = {
   notifications: Notification[];
   isLoading: boolean;
+  onItemClick?: (id: string) => void;
 };
 
 export function NotificationCard({
   notifications,
   isLoading,
+  onItemClick,
 }: NotificationCardProps) {
   return (
     <div
@@ -29,14 +30,14 @@ export function NotificationCard({
         'dark:border-slate-800 dark:bg-primary-dark-card',
       )}
     >
-      <div className=''>
+      <div>
         <div className='px-4 py-3 border-b border-border-home dark:border-slate-800'>
           <h3 className='text-sm font-bold text-primary-blue dark:text-primary-home'>
             Notificações
           </h3>
         </div>
 
-        {isLoading ? (
+        {isLoading && notifications.length === 0 ? (
           <div className='flex items-center justify-center gap-2 px-4 py-6 text-xs text-slate-400 dark:text-slate-500'>
             <Loader2 className='h-4 w-4 animate-spin text-primary-blue dark:text-primary-home' />
             <span>Carregando notificações...</span>
@@ -45,11 +46,13 @@ export function NotificationCard({
           notifications.map(item => (
             <div
               key={item.id}
+              onClick={() => onItemClick?.(item.id)}
               className={clsx(
                 'px-4 py-3',
                 'text-sm text-primary-blue dark:text-slate-300 wrap-break-word',
                 'border-b border-border-home dark:border-slate-800 last:border-b-0',
                 'flex items-center gap-3',
+                !item.read && 'bg-slate-50 dark:bg-slate-800/50',
               )}
             >
               <span className='text-lg'>{notificationIconMap[item.type]}</span>
@@ -59,6 +62,9 @@ export function NotificationCard({
                   {formatNotificationDate(item.createdAt)}
                 </p>
               </div>
+              {!item.read && (
+                <span className='w-1.5 h-1.5 rounded-full bg-primary-blue dark:bg-primary-home' />
+              )}
             </div>
           ))
         ) : (

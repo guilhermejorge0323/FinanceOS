@@ -35,7 +35,7 @@ export async function registerAction(
   try {
     const user = await AuthService.register(validation.data);
 
-    await createSession(user.id, user.email);
+    await createSession(user.name, user.id, user.email);
   } catch (error) {
     if (error instanceof Error) {
       if (error.message.includes('e-mail')) {

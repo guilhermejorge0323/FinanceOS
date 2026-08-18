@@ -4,7 +4,7 @@ import { cacheTag } from 'next/cache';
 
 export async function getNotificationsUser(
   userId: string,
-): Promise<Notification[]> {
+) {
   'use cache';
   cacheTag(`notifications-${userId}`);
   return await NotificationService.getUserNotifications(userId);

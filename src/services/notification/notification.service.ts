@@ -29,15 +29,56 @@ export class NotificationService {
   }
 
   static async getUserNotifications(userId: string) {
-    return await prisma.notification.findMany({
-      where: {
-        userId,
-        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
-      },
-      orderBy:  {
-        createdAt: 'desc'
-      },
-      take: 10,
+    const now = new Date();
+
+    const expiryFilter = {
+      OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+    };
+
+    const [notifications, unreadCount] = await Promise.all([
+      prisma.notification.findMany({
+        where: {
+          userId,
+          ...expiryFilter,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 10,
+      }),
+      prisma.notification.count({
+        where: {
+          userId,
+          read: false,
+          ...expiryFilter,
+        },
+      }),
+    ]);
+
+    return { notifications, unreadCount };
+  }
+
+  static async markAsRead(notificationId: string, userId: string) {
+    return await prisma.notification.updateMany({
+        where: {
+            id: notificationId,
+            userId,
+        },
+        data: {
+            read: true,
+        }
+    });
+  }
+
+  static async markAllAsRead(userId: string) {
+    return await prisma.notification.updateMany({
+        where: {
+            userId,
+            read: false
+        },
+        data: {
+            read: true
+        }
     });
   }
 }

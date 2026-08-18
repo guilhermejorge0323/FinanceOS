@@ -4,9 +4,14 @@ import { getNotificationsUser } from '@/lib/notifications/queries/notification.c
 import { getSession } from '@/lib/session';
 import { Notification } from '@prisma/client';
 
+export type GetNotificationsResult = {
+  notifications: Notification[];
+  unreadCount: number;
+};
+
 export async function getNotificationsAction(): Promise<{
   success: boolean;
-  data: Notification[];
+  data: GetNotificationsResult;
   error?: string;
 }> {
   try {
@@ -15,7 +20,7 @@ export async function getNotificationsAction(): Promise<{
     if(!session?.userId) {
         return {
             success: false,
-            data: [],
+            data: {notifications: [], unreadCount: 0},
             error: "UNAUTHORIZED"
         }
     }
@@ -24,6 +29,6 @@ export async function getNotificationsAction(): Promise<{
     return { success: true, data: notifications };
   } catch (error) {
     console.error('Erro ao buscar notificações:', error);
-    return { success: false, data: [] };
+    return { success: false, data: {notifications: [], unreadCount: 0} };
   }
 }
