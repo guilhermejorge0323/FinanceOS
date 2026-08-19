@@ -38,7 +38,7 @@ export async function createSession(
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
   const formatedName = name || 'usuário';
-  const token = await encrypt({ name, userId, email });
+  const token = await encrypt({ name: formatedName, userId, email });
 
   const cookieStore = await cookies();
   cookieStore.set('session', token, {
@@ -51,12 +51,18 @@ export async function createSession(
 }
 
 export async function getSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('session')?.value;
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('session')?.value;
 
-  if (!token) {
+    if (!token) {
+      return null;
+    }
+
+    const payload = await decrypt(token);
+    return payload;
+  } catch (error) {
+    console.error('Erro ao recuperar sessão:', error);
     return null;
   }
-
-  return await decrypt(token);
 }

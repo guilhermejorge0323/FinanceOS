@@ -52,6 +52,7 @@ export function NotificationCard({
                 'text-sm text-primary-blue dark:text-slate-300 wrap-break-word',
                 'border-b border-border-home dark:border-slate-800 last:border-b-0',
                 'flex items-center gap-3',
+                'hover:bg-muted dark:hover:bg-secondary-dark-background',
                 !item.read && 'bg-slate-50 dark:bg-slate-800/50',
               )}
             >

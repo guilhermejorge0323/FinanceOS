@@ -30,6 +30,7 @@
   --color-text-sidebar: #f8fafc;
   --color-muted-gray: #64748b;
   --color-border-home: #0f172a1a;
+  --color-home-red: #f43f5e;
 }
 
 @layer utilities {
