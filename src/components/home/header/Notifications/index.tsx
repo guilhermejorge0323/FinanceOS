@@ -33,7 +33,7 @@ export function Notifications() {
       >
         <BellIcon className='text-muted-gray dark:text-primary-text-dark w-4 h-4' />
         {unreadCount > 0 && (
-          <span className='absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#f43f5e]'></span>
+          <span className='absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-home-red'></span>
         )}
       </SecondaryButton>
 

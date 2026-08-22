@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { DM_Mono } from 'next/font/google';
+
+const dmMono = DM_Mono({
+  weight: ['400'],
+  subsets: ['latin'],
+  variable: '--font-dm-mono',
+});
 
 export const metadata: Metadata = {
   title: 'FinanceOS',
@@ -15,10 +22,10 @@ export default function RootLayout({
   return (
     <html
       lang='pt-br'
-      className={`h-full scroll-smooth`}
+      className={`h-full scroll-smooth ${dmMono.variable}`}
       suppressHydrationWarning
     >
-      <body className='min-h-full flex flex-col overflow-x-hidden'>
+      <body className={`min-h-full flex flex-col overflow-x-hidden `}>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

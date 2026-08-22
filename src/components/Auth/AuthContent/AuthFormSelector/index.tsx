@@ -8,7 +8,7 @@ export function AuthFormSelector() {
   return (
     <div
       className={clsx(
-        'flex bg-m mb-8 bg-[#e2e8f0] rounded-xl p-1 shadow-sm',
+        'flex mb-8 bg-muted rounded-xl p-1 shadow-sm',
         'dark:bg-secondary-dark-background',
       )}
     >
@@ -16,7 +16,7 @@ export function AuthFormSelector() {
         onClick={() => setActiveTab('login')}
         className={clsx('py-2 flex-1 font-medium', {
           'bg-white dark:text-white dark:bg-primary-dark-card': activeTab === 'login',
-          'text-[#64748b] bg-transparent hover:text-black/70 dark:text-primary-text-dark dark:hover:text-white':
+          'text-muted-gray bg-transparent hover:text-black/70 dark:text-primary-text-dark dark:hover:text-white':
             activeTab !== 'login',
         })}
       >
@@ -27,7 +27,7 @@ export function AuthFormSelector() {
         onClick={() => setActiveTab('register')}
         className={clsx('py-2 flex-1 font-medium', {
           'bg-white dark:text-white dark:bg-primary-dark-card': activeTab === 'register',
-          'text-[#64748b] bg-transparent hover:text-black/70 dark:text-primary-text-dark dark:hover:text-white':
+          'text-muted-gray bg-transparent hover:text-black/70 dark:text-primary-text-dark dark:hover:text-white':
             activeTab !== 'register',
         })}
       >

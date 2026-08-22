@@ -2,12 +2,12 @@
 
 import { Container } from '@/components/ui/container';
 import { Logo } from '@/components/ui/logo';
-import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ArrowUpRightIcon, MenuIcon } from 'lucide-react';
 import clsx from 'clsx';
 import { IntroductionHeaderLinks } from './IntroductionHeaderLinks';
 import { ResponsiveIntroductionMenu } from './ResponsiveIntroductionMenu';
 import { useState } from 'react';
+import { IntroductionLink } from '../ui/IntroductionLink';
 
 export function IntroductionHeader() {
   const [menuState, setMenuState] = useState(false);
@@ -30,7 +30,7 @@ export function IntroductionHeader() {
           </div>
 
           <div className='flex justify-end'>
-            <PrimaryButton
+            <IntroductionLink
               className={clsx(
                 'hidden lg:flex items-center gap-2',
                 'px-4 py-2',
@@ -40,7 +40,7 @@ export function IntroductionHeader() {
             >
               Entrar
               <ArrowUpRightIcon className='w-3.5 h-3.5' />
-            </PrimaryButton>
+            </IntroductionLink>
 
             <div className='lg:hidden flex items-center'>
               <button onClick={() => setMenuState(!menuState)}>

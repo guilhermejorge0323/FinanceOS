@@ -1,17 +1,18 @@
 import { cn } from '@/utils/mergeTailwind';
+import Link from 'next/link';
 import { ComponentProps, ReactNode } from 'react';
 
 type IntroductionButtonProps = {
   children: ReactNode;
-} & ComponentProps<'button'>;
+} & ComponentProps<'a'>;
 
-export function PrimaryButton({
+export function IntroductionLink({
   children,
   className,
-  ...props
 }: IntroductionButtonProps) {
   return (
-    <button
+    <Link
+      href={'/home'}
       className={cn(
         'rounded-xl',
         'text-sm font-semibold ',
@@ -19,9 +20,8 @@ export function PrimaryButton({
         ' cursor-pointer',
         className,
       )}
-      {...props}
     >
       {children}
-    </button>
+    </Link>
   );
 }

@@ -49,7 +49,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
           <MenuIcon className='h-4.5 w-4.5 dark:text-white' />
         </button>
 
-        <div className='hidden lg:block'>
+        <div className='hidden lg:block md:pl-60'>
           <HomeTitle className='text-sm'>{activeTab}</HomeTitle>
           <HomeParagraph className='text-xs'>{formattedDate}</HomeParagraph>
         </div>

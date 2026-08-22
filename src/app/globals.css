@@ -31,6 +31,10 @@
   --color-muted-gray: #64748b;
   --color-border-home: #0f172a1a;
   --color-home-red: #f43f5e;
+  --color-home-dark-blue: #0f172a;
+
+  /* Fonts */
+  --font-dm: var(--font-dm-mono), monospace;
 }
 
 @layer utilities {

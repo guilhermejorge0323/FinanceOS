@@ -1,7 +1,7 @@
 import { Container } from '@/components/ui/container';
 import { IntroductionHeaderLinks } from '../IntroductionHeaderLinks';
-import { PrimaryButton } from '../../../ui/PrimaryButton';
 import clsx from 'clsx';
+import { IntroductionLink } from '../../ui/IntroductionLink';
 
 export function ResponsiveIntroductionMenu() {
   return (
@@ -16,7 +16,7 @@ export function ResponsiveIntroductionMenu() {
       <Container className='flex-col gap-3 py-4'>
         <IntroductionHeaderLinks className='py-2 font-semibold' />
 
-        <PrimaryButton
+        <IntroductionLink
           className={clsx(
             'flex justify-center',
             'py-2.5 px-4',
@@ -25,7 +25,7 @@ export function ResponsiveIntroductionMenu() {
           )}
         >
           Entrar
-        </PrimaryButton>
+        </IntroductionLink>
       </Container>
     </div>
   );

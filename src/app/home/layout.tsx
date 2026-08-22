@@ -20,7 +20,7 @@ export default function HomeLayout({
           onClose={() => setIsSidebarOpen(false)}
         />
 
-        <div className='flex flex-1 flex-col lg:pl-60'>
+        <div className='flex flex-1 flex-col'>
           <Header onOpenSidebar={() => setIsSidebarOpen(true)} />
 
           <main className='flex-1 p-4 lg:p-6'>{children}</main>

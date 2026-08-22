@@ -17,7 +17,9 @@ export const registerSchema = z.object({
     .string()
     .trim()
     .min(2, 'O nome deve ter no mínimo 2 caracteres')
-    .regex(nameRegex, 'O nome deve conter apenas letras'),
+    .max(30, 'O nome deve ter no máximo 30 caracteres')
+    .regex(nameRegex, 'O nome deve conter apenas letras')
+    .transform((val) => val.trim()),
 
   email: z
     .string()
@@ -30,7 +32,10 @@ export const registerSchema = z.object({
     .string()
     .min(8, 'A senha deve ter no mínimo 8 caracteres')
     .regex(uppercaseRegex, 'A senha deve conter pelo menos 1 letra maiúscula')
-    .regex(specialCharRegex, 'A senha deve conter pelo menos 1 caractere especial (!@#$%...)'),
+    .regex(
+      specialCharRegex,
+      'A senha deve conter pelo menos 1 caractere especial (!@#$%...)',
+    ),
 });
 
 // ==========================================
@@ -44,9 +49,7 @@ export const loginSchema = z.object({
     .toLowerCase()
     .trim(),
 
-  password: z
-    .string()
-    .min(1, 'A senha é obrigatória'),
+  password: z.string().min(1, 'A senha é obrigatória'),
 });
 
 // ==========================================
