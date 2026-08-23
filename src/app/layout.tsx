@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
-import { DM_Mono } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
 
-const dmMono = DM_Mono({
-  weight: ['400'],
+const jetbrainsMono = JetBrains_Mono({
+  weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
-  variable: '--font-dm-mono',
+  variable: '--font-dm-mono', // Mantém a mesma variável que você já configurou no CSS
 });
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang='pt-br'
-      className={`h-full scroll-smooth ${dmMono.variable}`}
+      className={`h-full scroll-smooth ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body className={`min-h-full flex flex-col overflow-x-hidden `}>

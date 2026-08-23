@@ -34,7 +34,7 @@
   --color-home-dark-blue: #0f172a;
 
   /* Fonts */
-  --font-dm: var(--font-dm-mono), monospace;
+  --font-dm: var(--font-dm-mono);
 }
 
 @layer utilities {
