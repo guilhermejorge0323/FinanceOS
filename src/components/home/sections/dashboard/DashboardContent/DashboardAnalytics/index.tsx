@@ -1,0 +1,11 @@
+import { CategoryCardDashboard } from './CategoryCardDashboard';
+import { ScoreCardDashboard } from './ScoreCardDashboard';
+
+export function DashboardAnalytics() {
+  return (
+    <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+      <ScoreCardDashboard />
+      <CategoryCardDashboard/>
+    </div>
+  );
+}

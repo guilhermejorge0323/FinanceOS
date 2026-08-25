@@ -19,6 +19,7 @@ export function SecondaryButton({
         'transition-all duration-200',
         'font-medium text-muted-gray',
         'dark:bg-primary-dark-card dark:text-primary-text-dark dark:border-border-color',
+        'cursor-pointer',
         className
       )}
       {...props}

@@ -43,13 +43,13 @@ export function Header({ onOpenSidebar }: HeaderProps) {
       <div className='flex items-center gap-3'>
         <button
           onClick={onOpenSidebar}
-          className='rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden'
+          className='rounded-lg p-2 text-slate-600 hover:bg-slate-100 2xl:hidden'
           aria-label='Abrir menu'
         >
           <MenuIcon className='h-4.5 w-4.5 dark:text-white' />
         </button>
 
-        <div className='hidden lg:block md:pl-60'>
+        <div className='hidden 2xl:block md:pl-60'>
           <HomeTitle className='text-sm'>{activeTab}</HomeTitle>
           <HomeParagraph className='text-xs'>{formattedDate}</HomeParagraph>
         </div>

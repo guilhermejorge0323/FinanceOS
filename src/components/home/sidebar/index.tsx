@@ -25,7 +25,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div
         onClick={onClose}
         className={clsx(
-          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity lg:hidden',
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity 2xl:hidden',
           {
             'opacity-100 pointer-events-auto': isOpen,
             'opacity-0 pointer-events-none': !isOpen,
@@ -38,7 +38,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           'h-screen w-60 flex flex-col justify-between',
           'bg-primary-blue dark:bg-[#070d1a] text-white',
           'transition-transform duration-300 ease-in-out',
-          'lg:translate-x-0',
+          '2xl:translate-x-0',
           {
             'translate-x-0': isOpen,
             '-translate-x-full': !isOpen,
