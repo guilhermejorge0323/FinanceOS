@@ -1,3 +1,5 @@
+'use client';
+
 import { HomeTitle } from '@/components/home/ui/HomeTitle';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { getSession } from '@/lib/session';

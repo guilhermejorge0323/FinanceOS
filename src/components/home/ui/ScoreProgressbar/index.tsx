@@ -1,3 +1,5 @@
+'use client';
+
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 
 export function ScoreProgressbar({ value = 8 }: { value?: number }) {

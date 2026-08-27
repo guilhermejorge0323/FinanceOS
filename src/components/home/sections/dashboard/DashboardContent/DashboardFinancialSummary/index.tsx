@@ -1,8 +1,16 @@
-import { ArrowDownRightIcon, ArrowUpRightIcon, WalletIcon } from 'lucide-react';
+import { WalletIcon } from 'lucide-react';
 import { DashboardCard } from '../ui/DashboardCard';
 import { FinancialSummaryCard } from './FinancialSummaryCard';
+import { calculateFinancialSummary } from '@/utils/calculate-financial-summary';
+import { formatCurrency } from '@/utils/format-currency';
+import { getAuthedTransactions } from '@/lib/transactions/get-authed-transactions';
 
-export function DashboardFinancialSummary() {
+export async function DashboardFinancialSummary() {
+  const transactions = await getAuthedTransactions();
+
+  const { balance, totalIncomes, incomesCount, totalExpenses, expensesCount } =
+    calculateFinancialSummary(transactions);
+
   return (
     <div className='grid grid-cols-1 2xl:grid-cols-4 gap-4'>
       <DashboardCard className=' 2xl:col-span-2 bg-home-dark-blue dark:bg-[#128667]'>
@@ -17,7 +25,7 @@ export function DashboardFinancialSummary() {
 
         <div>
           <p className='text-4xl font-bold tracking-tight text-white font-dm'>
-            R$ 2.100,00
+            R$ {formatCurrency(balance)}
           </p>
           <p className='text-xs text-white/50 mt-1.5'>
             Entradas − Despesas do mês
@@ -27,15 +35,15 @@ export function DashboardFinancialSummary() {
 
       <FinancialSummaryCard
         title='ENTRADAS'
-        value='R$ 1.000,00'
-        subtext='4 Entradas'
+        value={`R$ ${formatCurrency(totalIncomes)}`}
+        subtext={`${incomesCount} Entradas`}
         typeCard='input'
       />
 
       <FinancialSummaryCard
         title='SAÍDAS'
-        value='R$ 1.000,00'
-        subtext='4 Saídas'
+        value={`R$ ${formatCurrency(totalExpenses)}`}
+        subtext={`${expensesCount} Entradas`}
         typeCard='output'
       />
     </div>

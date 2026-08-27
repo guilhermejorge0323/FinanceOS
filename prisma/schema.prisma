@@ -11,6 +11,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum TransactionType {
+  INCOME
+  OUTCOME
+}
+
 enum NotificationType {
   ALERT
   AI
@@ -18,27 +23,13 @@ enum NotificationType {
   GOAL
 }
 
-enum ScheduledTaskType {
-  SALARY
-  RECURRING_BILL
-  GOAL_CHECK
-  AI_SCORE_UPDATE
-}
-
-enum ScheduledTaskStatus {
-  PENDING
-  COMPLETED
-  FAILED
-}
-
 model User {
-  id           String        @id @default(cuid())
-  name         String?       @db.VarChar(30)
-  email        String        @unique
-  passwordHash String?       @map("password_hash")
-  createdAt    DateTime      @default(now()) @map("created_at")
+  id           String   @id @default(cuid())
+  name         String?  @db.VarChar(50)
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
 
-  // Relacionamentos
   categories      Category[]
   transactions    Transaction[]
   budgets         Budget[]
@@ -51,37 +42,40 @@ model User {
 }
 
 model Category {
-  id     Int     @id @default(autoincrement())
-  userId String? @map("user_id")
-  name   String
-  type   String  // 'income' ou 'outcome'
-  icon   String
+  id        Int             @id @default(autoincrement())
+  userId    String?         @map("user_id")
+  name      String          @db.VarChar(50)
+  type      TransactionType
+  icon      String          @db.VarChar(30)
+  isCustom  Boolean         @default(false) @map("is_custom")
 
-  // Relacionamentos
   user         User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   budgets      Budget[]
   dashCards    UserDashCard[]
 
+  @@index([userId, type])
   @@map("categories")
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
-  userId      String   @map("user_id")
-  categoryId  Int      @map("category_id")
-  description String
-  amount      Decimal  @db.Decimal(10, 2)
-  type        String   // 'income' ou 'outcome'
-  date        DateTime @db.Date
-  isScheduled Boolean  @default(false) @map("is_scheduled")
-  isPaid      Boolean  @default(true) @map("is_paid")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id          String          @id @default(cuid())
+  userId      String          @map("user_id")
+  categoryId  Int             @map("category_id")
+  description String          @db.VarChar(100)
+  amount      Decimal         @db.Decimal(12, 2)
+  type        TransactionType
+  date        DateTime        @db.Date
+  isScheduled Boolean         @default(false) @map("is_scheduled")
+  isPaid      Boolean         @default(true) @map("is_paid")
+  createdAt   DateTime        @default(now()) @map("created_at")
 
-  // Relacionamentos
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id])
 
+
+  @@index([userId, date, type])
+  @@index([userId, isPaid, isScheduled])
   @@map("transactions")
 }
 
@@ -89,27 +83,34 @@ model Budget {
   id              String   @id @default(cuid())
   userId          String   @map("user_id")
   categoryId      Int      @map("category_id")
-  amountAllocated Decimal  @map("amount_allocated") @db.Decimal(10, 2)
-  monthYear       String   @map("month_year") // Ex: '07-2026'
+  amountAllocated Decimal  @map("amount_allocated") @db.Decimal(12, 2)
+  monthYear       String   @map("month_year") // Formato: '08-2026'
   createdAt       DateTime @default(now()) @map("created_at")
 
-  // Relacionamentos
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id])
 
+  @@unique([userId, categoryId, monthYear])
   @@map("budgets")
 }
 
 model FinancialScore {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  score     Int      // 0 a 100
-  monthYear String   @map("month_year") // Ex: '07-2026'
-  createdAt DateTime @default(now()) @map("created_at")
+  id                     String   @id @default(cuid())
+  userId                 String   @map("user_id")
+  totalScore             Int      @map("total_score")
 
-  // Relacionamentos
+
+  incomeVsOutcomeScore   Int      @default(0) @map("income_vs_outcome_score")
+  planningAdherenceScore Int      @default(0) @map("planning_adherence_score")
+  investmentScore        Int      @default(0) @map("investment_score")
+  historyConsistencyScore Int     @default(0) @map("history_consistency_score")
+
+  monthYear              String   @map("month_year") // Formato: '08-2026'
+  createdAt              DateTime @default(now()) @map("created_at")
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, monthYear])
   @@map("financial_scores")
 }
 
@@ -117,13 +118,12 @@ model UserDashCard {
   id               String   @id @default(cuid())
   userId           String   @map("user_id")
   title            String
-  cardType         String   @map("card_type") // 'income', 'outcome', 'goal', 'limit'
-  targetAmount     Decimal? @map("target_amount") @db.Decimal(10, 2)
+  cardType         String   @map("card_type")
+  targetAmount     Decimal? @map("target_amount") @db.Decimal(12, 2)
   filterCategoryId Int?     @map("filter_category_id")
   positionIndex    Int      @map("position_index")
   createdAt        DateTime @default(now()) @map("created_at")
 
-  // Relacionamentos
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   filterCategory Category? @relation(fields: [filterCategoryId], references: [id], onDelete: SetNull)
 
@@ -134,12 +134,11 @@ model AiInsight {
   id          String   @id @default(cuid())
   userId      String   @map("user_id")
   monthYear   String   @map("month_year")
-  insightType String   @map("insight_type") // 'attention', 'goal', 'tip'
+  insightType String   @map("insight_type")
   title       String
   content     String   @db.Text
   createdAt   DateTime @default(now()) @map("created_at")
 
-  // Relacionamentos
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("ai_insights")
@@ -154,11 +153,9 @@ model Notification {
   createdAt DateTime         @default(now()) @map("created_at")
   expiresAt DateTime?        @map("expires_at")
 
-  // Relacionamentos
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, expiresAt])
   @@index([userId, read])
-  @@index([userId, createdAt])
   @@map("notifications")
 }
