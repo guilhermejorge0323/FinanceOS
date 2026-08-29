@@ -1,16 +1,25 @@
-import { getAuthedTransactions } from '@/lib/transactions/get-authed-transactions';
+import { getAuthedTransactions } from '@/lib/transactions/getAuthedTransactions';
 import { DashboardCard } from '../../ui/DashboardCard';
 import { CategoryDonutChart, CategoryData } from './CategoryDonutChart';
 import { CategoryProgressBarList } from './CategoryProgressBarList';
 import { calculateCategoryExpenses } from '@/utils/calculate-category-expenses';
 import { calculateFinancialSummary } from '@/utils/calculate-financial-summary';
 import { formatCurrency } from '@/utils/format-currency';
-
+import { getAuthedCategories } from '@/lib/categories/getAuthedCategories';
 
 export async function CategoryCardDashboard() {
-  const transactions = await getAuthedTransactions();
+  const [transactions, userCategories] = await Promise.all([
+    getAuthedTransactions(),
+    getAuthedCategories(),
+  ]);
 
-  const categories = calculateCategoryExpenses(transactions);
+  const expenseCategories = userCategories.filter(c => {
+    return c.type === 'OUTCOME';
+  });
+
+  const categories = calculateCategoryExpenses(transactions, expenseCategories);
+
+  const donutData = categories.filter(c => c.amount > 0);
 
   const { totalExpenses } = calculateFinancialSummary(transactions);
 
@@ -34,25 +43,24 @@ export async function CategoryCardDashboard() {
         </div>
 
         <span className='font-dm text-sm font-bold text-slate-800 dark:text-white'>
-          R$ {formatCurrency(totalExpenses)}
+          {formatCurrency(totalExpenses)}
         </span>
       </div>
 
-      {categories.length === 0 ? (
-        <div className='flex h-44 items-center justify-center text-xs text-slate-400'>
-          Nenhuma despesa cadastrada neste mês.
-        </div>
-      ) : (
-        /* Grid com os 2 componentes visuais */
-        <div className='grid grid-cols-1 md:grid-cols-12 gap-4 items-center'>
-          <div className='md:col-span-5'>
+      <div className='grid grid-cols-1 md:grid-cols-12 gap-4 items-center'>
+        <div className='md:col-span-5'>
+          {donutData.length > 0 ? (
             <CategoryDonutChart data={categories} />
-          </div>
-          <div className='md:col-span-7'>
-            <CategoryProgressBarList categories={categories} />
-          </div>
+          ) : (
+            <div className='h-44 flex items-center justify-center text-xs text-slate-400 text-center px-4'>
+              Sem despesas no período
+            </div>
+          )}
         </div>
-      )}
+        <div className='md:col-span-7'>
+          <CategoryProgressBarList categories={categories} />
+        </div>
+      </div>
     </DashboardCard>
   );
 }

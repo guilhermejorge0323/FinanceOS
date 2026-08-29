@@ -9,7 +9,8 @@ import { getSession } from '@/lib/session';
 import { getTransactionsUser } from '@/lib/transactions/queries';
 import { createStaticTransactionAction } from '@/actions/test/transaction-action';
 import { formatCurrency } from '@/utils/format-currency';
-import { getAuthedTransactions } from '@/lib/transactions/get-authed-transactions';
+import { getAuthedTransactions } from '@/lib/transactions/getAuthedTransactions';
+
 
 type TransactionCardProps = {
   type: 'input' | 'output';

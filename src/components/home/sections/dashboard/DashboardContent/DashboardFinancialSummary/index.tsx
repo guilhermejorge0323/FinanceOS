@@ -3,7 +3,8 @@ import { DashboardCard } from '../ui/DashboardCard';
 import { FinancialSummaryCard } from './FinancialSummaryCard';
 import { calculateFinancialSummary } from '@/utils/calculate-financial-summary';
 import { formatCurrency } from '@/utils/format-currency';
-import { getAuthedTransactions } from '@/lib/transactions/get-authed-transactions';
+import { getAuthedTransactions } from '@/lib/transactions/getAuthedTransactions';
+
 
 export async function DashboardFinancialSummary() {
   const transactions = await getAuthedTransactions();

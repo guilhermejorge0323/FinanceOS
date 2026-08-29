@@ -1,7 +1,11 @@
+'use client';
+
+import { deleteTransactionAction } from '@/actions/transaction/delete-transaction-action';
 import { getCategoryIcon } from '@/utils/category-icons';
 import { formatCurrency } from '@/utils/format-currency';
 import clsx from 'clsx';
-import { Trash2Icon } from 'lucide-react';
+import { Loader2, Trash2Icon } from 'lucide-react';
+import { useTransition } from 'react';
 
 type TransactionProps = {
   type: 'input' | 'output';
@@ -16,6 +20,18 @@ type TransactionProps = {
 
 export function Transaction({ type, data }: TransactionProps) {
   const isInput = type === 'input';
+
+  const [isPending, startTransition] = useTransition();
+
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        await deleteTransactionAction(data.id);
+      } catch (error) {
+        console.error('Erro ao deletar transacao', error);
+      }
+    });
+  };
 
   return (
     <div className='group px-5 py-3 flex items-center justify-between hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors'>
@@ -49,14 +65,21 @@ export function Transaction({ type, data }: TransactionProps) {
         </p>
 
         <button
+          onClick={handleDelete}
           type='button'
           title='Excluir transação'
           className={clsx(
-            'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
-            'p-1.5 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 dark:hover:bg-rose-500/20',
+            'transition-all duration-200 p-1.5 rounded-md cursor-pointer',
+            isPending
+              ? 'opacity-100 text-rose-500'
+              : 'opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 dark:hover:bg-rose-500/20',
           )}
         >
-          <Trash2Icon className='w-3.5 h-3.5' />
+          {isPending ? (
+            <Loader2 className='w-3.5 h-3.5 animate-spin' />
+          ) : (
+            <Trash2Icon className='w-3.5 h-3.5' />
+          )}
         </button>
       </div>
     </div>

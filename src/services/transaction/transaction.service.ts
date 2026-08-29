@@ -14,4 +14,12 @@ export class TransactionService {
       },
     });
   };
+
+  static deleteTransaction = async (id: string) => {
+    return await prisma.transaction.delete({
+      where: {
+        id: id,
+      },
+    });
+  };
 }
