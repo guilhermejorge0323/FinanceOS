@@ -1,10 +1,9 @@
 import { WalletIcon } from 'lucide-react';
-import { DashboardCard } from '../ui/DashboardCard';
+import { HomeCard } from '../ui/DashboardCard';
 import { FinancialSummaryCard } from './FinancialSummaryCard';
 import { calculateFinancialSummary } from '@/utils/calculate-financial-summary';
 import { formatCurrency } from '@/utils/format-currency';
 import { getAuthedTransactions } from '@/lib/transactions/getAuthedTransactions';
-
 
 export async function DashboardFinancialSummary() {
   const transactions = await getAuthedTransactions();
@@ -14,7 +13,7 @@ export async function DashboardFinancialSummary() {
 
   return (
     <div className='grid grid-cols-1 2xl:grid-cols-4 gap-4'>
-      <DashboardCard className=' 2xl:col-span-2 bg-home-dark-blue dark:bg-[#128667]'>
+      <HomeCard className=' 2xl:col-span-2 bg-home-dark-blue dark:bg-[#128667]'>
         <div className='flex items-center justify-between'>
           <span className='text-white/70 tracking-wider text-xs font-semibold'>
             SALDO LIVRE
@@ -32,7 +31,7 @@ export async function DashboardFinancialSummary() {
             Entradas − Despesas do mês
           </p>
         </div>
-      </DashboardCard>
+      </HomeCard>
 
       <FinancialSummaryCard
         title='ENTRADAS'

@@ -44,7 +44,7 @@ model User {
 model Category {
   id        Int             @id @default(autoincrement())
   userId    String?         @map("user_id")
-  name      String          @db.VarChar(50)
+  name      String          @db.VarChar(18)
   type      TransactionType
   icon      String          @db.VarChar(30)
   isCustom  Boolean         @default(false) @map("is_custom")

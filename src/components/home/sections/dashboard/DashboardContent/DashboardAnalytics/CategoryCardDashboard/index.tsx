@@ -1,5 +1,5 @@
 import { getAuthedTransactions } from '@/lib/transactions/getAuthedTransactions';
-import { DashboardCard } from '../../ui/DashboardCard';
+import { HomeCard } from '../../ui/DashboardCard';
 import { CategoryDonutChart, CategoryData } from './CategoryDonutChart';
 import { CategoryProgressBarList } from './CategoryProgressBarList';
 import { calculateCategoryExpenses } from '@/utils/calculate-category-expenses';
@@ -31,7 +31,7 @@ export async function CategoryCardDashboard() {
     currentMonthYear.charAt(0).toUpperCase() + currentMonthYear.slice(1);
 
   return (
-    <DashboardCard className='flex flex-col justify-between gap-4'>
+    <HomeCard className='flex flex-col justify-between gap-4'>
       <div className='flex justify-between items-center'>
         <div>
           <p className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
@@ -61,6 +61,6 @@ export async function CategoryCardDashboard() {
           <CategoryProgressBarList categories={categories} />
         </div>
       </div>
-    </DashboardCard>
+    </HomeCard>
   );
 }

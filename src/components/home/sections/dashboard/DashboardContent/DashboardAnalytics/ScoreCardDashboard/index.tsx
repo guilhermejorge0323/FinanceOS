@@ -1,5 +1,5 @@
 import { ScoreProgressbar } from '@/components/home/ui/ScoreProgressbar';
-import { DashboardCard } from '../../ui/DashboardCard';
+import { HomeCard } from '../../ui/DashboardCard';
 import { TrendingUpIcon } from 'lucide-react';
 
 interface ScoreCriterion {
@@ -23,7 +23,7 @@ function getScoreColor(score: number): string {
 
 export function ScoreCardDashboard() {
   return (
-    <DashboardCard className='flex flex-col gap-5'>
+    <HomeCard className='flex flex-col gap-5'>
       <div>
         <p className='text-xs text-primary-green font-semibold tracking-widest'>
           SCORE FINANCEIRO
@@ -65,6 +65,6 @@ export function ScoreCardDashboard() {
           );
         })}
       </div>
-    </DashboardCard>
+    </HomeCard>
   );
 }
