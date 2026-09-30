@@ -3,7 +3,6 @@
 import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
 import { Notification } from '@prisma/client';
-import { da } from 'zod/locales';
 
 export interface UserNotificationResponse {
   notifications: Notification[];

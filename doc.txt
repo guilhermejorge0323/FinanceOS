@@ -1,0 +1,478 @@
+documentacao ate agora financeOs
+
+#Tabela BD
+
+    USER
+        name                                            <- Nome do usuario limitado a 50 caracteres
+        email                                           <- Email do usuario unico no sistema
+        passwordHash                                    <- hash da senha, usado map() para renomear no banco para "password_hash"
+
+        RELACIONAMENTOS:
+        categories                                      <- Um usuario pode ter varias categorias (10 do padroes e 5 personalizadas)
+        transactions                                    <- Um usuario pode ter varias transacoes
+        budget                                          <- O orcamento estipulado pelo usuario por mes, um usuario pode ter varios
+        financialScores                                 <- Historio de notas da saude financeira do usuario, do score dele um usuario pode ter varios
+        dashCards                                       <- Os cards personalizados do usuario, um usuario pode ter varios (maximo 5 cards personalizados por usuario)
+        aiInsights                                      <- relatorios gerados por IA, um usuario pode ter varios
+        notifications                                   <- as notificacoes do usuario um usuario pode ter varias
+
+    CATEGORY
+        id                                              <- O id da categoria, sao numeros inteiros que se auto completam (1,2,3...)
+        userId                                          <- id do usuario dono da categoria, uma categoria so pode ter 1 usuario
+        name                                            <- nome da categoria, limitado a 18 caracteres
+        type                                            <- Tipo da categoria definido por um ENUM (INCOME: Entrada) (OUTCOME: Saida)
+        icon                                            <- Nome do icone, o icone e pegado de um arquivo que tem um objeto com os icones
+        isCustom                                        <- Define se e uma categoria criado pelo o usuario ou  padrao do sistema sendo o boleano valor padrao e false
+
+        RELACIONAMENTOS:
+        user                                            <- Uma categoria so pode ter 1 usuario
+        transactions                                    <- Uma categoria pode ter varias transacoes
+        budgets                                         <- Lista dos orcamentos criado por categoria uma categoria pode ter varios
+        dashCards                                       <- Cards personalizados do usuario configurados por categoria uma categoria pode ter varios
+
+        @@index([userId, type])                         <- Índice de Performance: Agiliza a busca quando o app consulta categorias filtrando por usuário e tipo ao mesmo tempo.
+
+    TRANSACTION
+        userId                                          <- Id do usuario dono da transacao
+        categoryId                                      <- Id da categroia associada a transacao
+        description                                     <- descricao/nome da categoria com limite de 100 caracteres
+        amount                                          <- valor monetario da transacao sendo db.decimal(12,2) garantindo ate 12 digitos sendo 2 casas decimais
+        type                                            <- tipo da transacao definido por um ENUM (INCOME: Entrada) (OUTCOME: Saida)
+        status                                          <- Status da transacao ( PAID:pago, PENDING:pendente SCHEDULED:agendada SCHEDULED_PAID:agendada paga, PLANNED:planejada ) com valor padrao PAID
+        date                                            <- Data de criacao da transacao
+        dueDate                                         <- Data de vencimento de uma transacao agendada e opcional pois so vai ser preenchido com transacoes agendadas
+        recurrence                                      <- tipo de repeticao definido por um enum ( NONE:nenhum, MONTHLY:mes, YEARLY:ano ) com valor padrao NONE
+        parentId                                        <- id da transacao pai usado para quando for ter recorrencia
+
+        RELACIONAMENTOS
+        user                                            <- Uma transacao so pode ter 1 usuario
+        category                                        <- Uma transacao so pode ter 1 categoria
+        parent                                          <- Auto-relacionamento quando tem recorrencia e criado outras transacoes o parent vai receber o id da original
+        childOccurrences                                <- Auto-relacionamento lista as transacoes filhas desta
+
+        @@index([userId, date, type])                   <- Índice: Otimiza o carregamento de dashboards que filtram movimentações por período e tipo.
+        @@index([userId, status, dueDate])              <- Índice: Otimiza a listagem da aba de contas agendadas/a vencer.
+
+    BUDGET
+    mapeia os limites de gastos orcados por categoria em um determinado mes/ano
+        userId                                          <- Id do usuario dono do orcamento
+        categoryId                                      <- Id da categoria relacionada ao orcamento
+        amountAllocated                                 <- Valor de dinheiro alocado para gastar
+        monthYear                                       <- Mes de referencia no formato mm-yyyy
+
+        RELACIONAMENTOS:
+        user                                            <- Um budget so pode ter um usuario mas 1 usuario pode ter varios budgets
+        category                                        <- Um budget so pode ter uma categoria mas uma categoria pode ter varios
+
+        @@unique([userId, categoryId, monthYear])       <- garante que o mesmo usuario nao crie 2 orcamentos para a mesma categoria no mesmo mes
+
+    FINANCIAL_SCORE
+    guarda o score financeiro de um usuario calculado por mes
+        userId                                          <- Id do usuario avaliado
+        totalScore                                      <- Int valor do score do usuario (0 a 100)
+        incomeVsOutcomeScore                            <- Sub-nota referente ao oque entra x oque gasta
+        planningAdherenceScore                          <- Sub-nota referente se o usuario seguiu o orcamento definido
+        investmentScore                                 <- Sub-nota referente ao aportes em investimentos registrados
+        historyConsistencyScore                         <- Sub-nota referente a consistencia de registros diarios de um usuario
+        monthYear                                       <- Mes e ano do calculo
+
+        RELACIONAMENTOS:
+        user                                            <- Um score so tem 1 usuario mas um usuario tem varios scores
+
+        @@unique([userId, monthYear])                   <- Impede a geracao de duas notas pro mesmo usuario no mesmo mes
+
+    USER_DASHCARD
+    guarda os dados dos cards personalizados criados pelo usuario
+        userId                                          <- Id do usuario dono do card
+        title                                           <- Titulo do card
+        cardType                                        <- O tipo do card e definido por um enum ( Summary, CATEGORY_PROGRESS, Meta )
+        targetAmount?                                   <- valor de meta estipulado caso o card seja de meta, e um valor opcional
+        filterCategoryId?                               <- Id da categoria associada ao card caso o card seja CATEGORY_PROGRESS e um valor opcional
+        positionIndex                                   <- Posicao numerica do card na grade para ordenar a exibicao
+
+        RELACIONAMENTOS:
+        user                                            <- Um card so pode ter um usuario mas um usuario pode ter varios cards (maximo 5)
+        filterCategory                                  <- Liga opcionalmente a uma categoria
+
+    AI_INSIGHT
+    armazena as analises financeiras e textos explicativos gerados por IA
+        userId                                          <- Id do usuario relacionado a INSIGHT
+        monthYear                                       <- Mes e ano da analise
+        insightType                                     <- Tipo da insight
+        title                                           <- Titulo da insight
+        content                                         <- Conteudo da insight
+
+        RELACIONAMENTOS:
+        user                                            <- Uma insight pode ter apenas 1 usuario mas um usuario pode ter varias
+
+    NOTIFICATION
+        userId                                          <- Id do usuario referente a notificacao
+        title                                           <- Titulo da notificacao
+        type                                            <- Tipo da notificacao definido por um enum ( ALERT, AI, BILLING, GOAL )
+        read                                            <- Um valor boleano definindo se a notificacao foi lida
+        expiresAt                                       <- Data limite da notificacao para que ela seja apagada do banco de dados
+
+        RELACIONAMENTOS:
+        user                                            <- Uma notificacao so pode ter 1 usuario mas 1 usuario pode ter varias notificacoes
+
+        @@index([userId, expiresAt])                    <- Otimiza a exclusão automática de alertas expirados por usuário.
+        @@index([userId, read])                         <- Otimiza a consulta rápida para contar notificações pendentes ("não lidas").
+
+funcoes /lib
+
+
+
+funcoes /utils
+    #calculateFinancialSummary:
+    - Ela calcula o valor total de entradas, o valor total de saidas, o numero de entradas, o numero de saidas e o total de (ENTRADAS - SAIDAS)
+
+    - Ele vai receber as transacoes e o modo
+
+    - Ele tem uma interface que define como as transacoes vao ser recebidas e exporta ela para ser usado em outros lugares
+
+    - Primeiro ele define 4 variaveis com os valores iniciais
+            let totalIncomes = 0;
+            let incomesCount = 0;
+            let totalExpenses = 0;
+            let expensesCount = 0;
+
+    - Ai percorremos o array recebido com as transactions com um forEach para executar uma funcao para cada elemento nessa funcao:
+        - Criamos uma cont amount que vai receber a quantia da transacao
+        - Ai fazemos um if() primeiro verificamos se o mode e CURRENT se for verdadeiro:
+            - verificamos se o status e PAID ou SCHEDULED_PAID se for um desses 2:
+                - Verificamos se o tipo e INCOME caso for ele soma mais esse valor no totalIncomes e incrementamos mais 1 no incomesCount, caso nao ele soma mais esse valor no totalExpenses e incrementa mais 1 no expensesCount
+        - Caso o mode for SCHEDULED ele:
+            - Verificamos se o status e SCHEDULED ou PLANNED ou SCHEDULED_PAID
+                - Ai fazemos a mesma coisas incrementamos nos valores iniciais
+
+    - Criamos uma constante balance que vai ser o totalIncomes -  totalExpenses
+
+    - Ai retornamos tudo balance, totalIncomes, incomesCount, totalExpenses, expensesCount
+
+
+    #calculateCategoryExpenses:
+    - Ela e responsavel por agrupar somar e formatar os gastos por categoria para alimentar do grafico de donout e as barras de progresso
+
+    - Certo ela comeca definindo uma interface para os dados recebidos de uma categoria e exportamos ela para usar em outros lugares
+
+    - Criamos um objeto que sera um mapa para as cores para cada categoria e um array que vai conter as proximas cores para as 5 categorias que o usuario pode criar para saidas
+
+    - Ai criamos a funcao getConsistentColor:
+        - Serve para que cada categoria receba uma cor no grafico, ela recebe o name e o id
+        - Primeiro verificamos se e uma categoria padrao que ja esta definida no objeto principa se for retorna ela
+        - Caso nao faz um algoritimo de hash para as categorias personalizadas, infelizmente tenho muito sono para explicar :<
+
+    - Criamos a funcao principal que recebe as transacoes as categorias e o mode
+
+    - Nela primeiro fazemos um filtragem de 2 passos filtrando as transacoes apenas saidas ai desse e filtrado:
+        - CURRENT <- Apenas as saidas com status PAID e SCHEDULED_PAID
+        - SCHEDULED <- Apenas as saidas com statud SCHEDULED SCHEDULED PLANNED
+      Assim e retornado apenas as transacoes especificas por mode
+
+    - Ai pegamos o totalExpenses da calculateFinancialSummary
+
+    - Apos ele faz um forEach no array com as categorias criando um objeto acumulador zerado para cada categoria
+
+    - Depois fazemos um forEach nas despesas filtradas e soma os valores gastos em cada
+
+    - Depos fazemos um object.values para transformar o objeto em array
+
+
+Validacoes/ schemas com zod
+
+
+Actions
+    #createTransactionAction:
+        - Vai ser a action que vai ser executada para criar uma transacao, ela recebe como parametro (data) <- que vem do formulario
+
+        - Dentro de um try catch ele primeiro pega a sessao com a nossa funcao getSession() e verificamos se tem o userId
+
+        - caso as verificacoes nao passem vai retornar um objeto com success: false e o nome do erro
+
+        - Depois usamos o schema de transaction e fazemos um safeParse() passando o data para verificar os dados recebidos com base no nosso schema do zod
+
+        - Depois pegamos tudo que foi validado e passamos para o sevice de criar transacao
+
+        - Ai revalidamos o cache com o revalidateTag() e revalidamos a rota para os dados atualizarem na tela com o revalidatePath()
+
+        - E por fir retornamos success true e o data
+
+
+
+/ <- pagina landing page de apresentacao do sistema simples
+
+
+/home <-A pagina home onde vai ficar as 3 sessoes principais (Dashboard) (transacoes) (Analise de IA)
+
+LAYOUT
+ - A estrutura do layout o conteudo e envolvido pelo o contexto da troca de sessoes
+ - Ela contem a sideBar e a header da /home
+
+   <Sidebar /> <- ele e uma sidebar onde fica a barra de navegacao entre as sessoes e a logo e envolvido por uma div que com um fundo preto que so aparece no mobile e ao clicar fecha a barra
+
+   <Header /> <- Vai ficar os botoes do menu a data o nome da sessao que e pego do contextn e a data formatada que e pega de uma API
+
+   sistema de notificacoes:
+     - O sistema de notificacoes ele vai emitir notificacoes a qualquer momento idependente do usuario estiver logado ou nao, para isso vamos usar background jobs no trigger
+     - por enquanto o trigger esta rodando todo dia e excluindo as notificacoes que expiraram
+     - As notificacoes tem que ser lancadas em tempo real e ao clicar no botao de notificacao marcar elas como lida entao criamos um arquivo em /api e um hook onde o hook vai usar
+     SWR para fazer uma requesicao a cada 10s
+
+
+
+CONTEUDO
+  - A estrutura da pagina home e desenhada para alternar entre 3 sessoes na mesma rota
+
+  - A page.tsx e um server component pois no next App Router as pages sao server components
+
+  - Criamos um contexto e um componente para alternar as abas assim criamos um componente o <HomeTabContent /> pois ele e um client component por usar o contexto
+
+  <Dashboard />
+    - Vai ficar o dashboard do usuario tendo 1 linha de header que vai conter o nome do usuario e um botao para alternar entre (atual/previsto) e 3 linhas com cards
+
+    - o componente vai ser server onde ele vai pegar o userName da sessao e a aba ativa dos parametros da url
+
+    # Top bar(header)
+        - A <DashboardTopBar /> ele contem o 1 nome do usuario e o botao de alternar entre atual/previsto
+
+        - Ele recebe como parameto o userName que esta no jwt que esta nos cookies, pegamos esse userName e usamos uma funcao que criamos para pegar apenas o 1 nome do usuario e o exibimos
+
+        - O sistema de alternar entre atual/previsto ele vai setar nos parametros da url um parametro tab em que ele vai ser usado para alternar os valores, ao clicar nos botoes de alternar ele chama a
+        funcao handleTabChange que seta na rota os valores e usa o router.push() para que troque os valores sem um refresh total na pagina
+
+    # <DashboardContent />
+        - Onde vai ficar as 3 linhas ele recebe como parametro o modo atual que vem da url (CURRENT,SCHEDULED)
+
+        - Ele tambem e um server component ele vai buscar as transacoes e categorias com um Promisse.all(getAuthedTransactions(),getAuthedCategories()) que sao 2 funcoes que criamos para fazer o get das
+        transacoes e das categorias e as colocar em cache, as transacoes e categorias vao ser passadas aos filhos
+
+    # 1 Linha: Financial summary
+        - Ele contem 3 cards sendo o 1 (Saldo livre [Entradas - Saidas]) (Total de entradas) (Total de saidas)
+
+        - Ele recebe as transacoes e o modo (CURRENT, SCHEDULED)
+
+        - Ele pega os valores da funcao que criamos calculateFinancialSummary passando as transacoes e o mode
+
+        - Ai criamos 3 cards dentro de um grid com 4 colunas sendo que o 1 ocupa 2 colunas ai colocamos os valores nele
+
+    # 2 Linha: Analytics
+        - Ele contem 2 cards sendo 1 com o Score do usuario e as notas (N esta pronto) e um com um grafico com os gastos separados por categoria
+
+        - Ele recebe as transacoes o mode e as categorias do usuario
+
+        <CategoryCardDashboard />
+            - Ele recebe do pai as transacoes, modo e as categorias do usuario
+
+            - Primeiro temos uma constante com as categorias recebidas filtradas apenas vamos receber categorias com type OUTCOME
+
+            - Filtramos as categorias pegamos a cor para cada a porcetagem e o valor pela funcao de utils que criamos calculateCategoryExpenses
+
+            - Criamos uma constante que vai filtrar as categorias que o amount seja maior que 0 essa constante vai ser enviada para o grafico de donout
+
+            - Pegamos tambem o total de saidas do calculateFinancialSummary
+
+            - Pegamos e formatamos a data atual o ano e mes
+
+            - Primeiro criamos um componente para o grafico de donout
+                <CategoryDonutChart />
+                    - Instalamos a biblioteca recharts para criar o grafico de donout
+
+                    - O componente vai receber as categorias com o percentage e color <- (Que sao as categorias que filtramos pela funcao de utils calculateCategoryExpenses)
+
+                    - Usamos um map para extrair o color do data e colocar em uma parametro fill que e necessario para o recharts
+
+                    - Ai usamos o <PieChart></PieChart> e dentro dele <Pie /> que recebe o data filtrado pelo map que agente fez
+
+            - Depois criamos as barras de progresso
+                <CategoryProgressBarList />
+                    - Ele vai receber as categorias do mesmo jeito que o <CategoryDonutChart />
+
+                    - Ele basicamente vai fazer um map para todas as categorias e criar uma div encima da outra sendo as barras de progresso com o total encima
+
+
+    # 3 Linhas: Transactions
+        - Ela contem 2 cards com as transacoes sendo 1 para entradas e outro para saidas cada card tem 1 botao que abre 1 formulario para criar transacoes que tambem tem um botao que redireciona para o de criar categorias
+
+        - O componente pai ele vai receber as transacoes o mode e as categorias sendo ele um client component
+
+        - Os 2 cards vao derivar do mesmo componente sendo ele adaptado para cada tipo passado por parametros TransactionCard
+            <TransactionCard />
+                - Ele vai receber o type ('INCOME', 'OUTCOME) as transacoes as categorias e o mode
+
+                - Primeiro ele filtra as transacoes recebidas filtrando pelo tipo e depois os mesmos esquemas com os modos
+
+                - Depois fazemos um acumulador para calcular o total, nao usamos a calculateFinancialSummary() pois o card e modular e serve para ambos os tipos (INCOME, OUTCOME)
+
+                - Ai primeiro fazemos o header do card
+                    <TransactionCardHeader />
+                        - Nele vai ficar o numero de transacoes do mes, o total e o botao de adicionar transacao
+
+                        - Ele vai receber o tipo, o total, o numero de registros, as categorias e o modo
+
+                        - Primeiro criamos um estado useState (isModalOpen) ele vai ser usado para abrir o card de formulario
+
+                        - Depois o conteudo sao divs onde vai definir o estilo do componente dependendo do type e passando os dados numero de registros e total
+
+                        - Ai vem o botao ele vai setar o estado (isModalOpen) como true ao clicar nele embaixo do botao vai ficar o card com o formulario que e outro componente que vai sobrepor a tela inteira o CardCreateHome
+                            <CardCreateHome />
+                                - Ele vai ser o card que vai sobrepor a tela contendo os formularios de criar transacao e o de criar componente sendo adaptado para alternar entre os formularios
+
+                                - Ele vai receber de parametroso type ('INCOME', 'OUTCOME'), isOpen que e o estado para quando estiver aberto, onClose() que e uma funcao que vai definir o isOpen como false, as categorias e o modo
+
+                                - Primeiro definimos um estado que e o estado que vai definir qual formulario vai ser exibido <TRANSACTION | CATEGORY>
+
+                                - Depois criamos um useTransition()
+
+                                - Depois criamos um estado para os erros que vamos receber
+
+                                - Criamos uma funcao handleClose que vai setar o view em Transaction setar o estado de erro como nulo e chamar a funcao onClose dos parametros
+
+                                - Criamos a funcao que vai ser executada ao enviar o formulario de criar transacao
+                                        - Ela vai setar o estado de erro como nulo
+
+                                        - Vai chamar a action verificar se tem erro se tiver lanca o erro no estado de erro caso nao chama a funcao de handleClose() <Tudo isso dentro de um startTransition()
+
+                                - Depois criamos a funcao que vai ser executada ao enviar o formulario de criar categoria, vai funcionar do mesmo jeito da de criar transacao mas no final vai setar o view para <Transaction />
+
+                                - Certo o componente ele vai ser envolvido por um componente que criamos que e o <BackdropModal /> que e o fundo preto com blur que ao clicar fecha
+                                    <BackdropModal/>
+                                        - Bom ele recebe isOpen <- boolean, onClose <- a funcao de quando fechar e o children
+
+                                        - Primeiro verifica se o isOpen e false caso for retorna null
+
+                                        - Depois retorna o componente que e uma div com o fundo recebendo o onClick com o onClose e outra div com o children
+
+                                - Certo passamos para o BackdropModal o isOpen e o onClose
+
+                                - Depois e um componente para o card, ai vamos adaptando atraves do view
+                                    - Se for CATEGORY ele exibe um botao de voltar
+                                    - Depois exibe o formulario baseado no view
+
+                        <TransactionForm />
+                            - Vai ser o formulario base de criar uma transacao
+
+                            - Ele vai receber o initialType <'INCOME','OUTCOME'>, showTypeToggle <- um boolean que vai definir se mostra o menu de toogle para selecionar o tipo da transacao, as categorias, um isLoading, o mode, a funcao de criar de criar transacao, e a funcao que vai setar o view para o form de ctegoria
+
+                            - Primeiro vamos criar um estado para o type ele vai receber como valor inicial o initialType
+
+                            - Criamos um estado para o amount que se inicia em 0
+
+                            - Criamos outro estado para o categoryId que vai receber o id da categoria selecionada
+
+                            - Depois outro estado para a description
+
+                            - Depois outro estado para o status da transaction
+
+                            - Outro estado agora para data
+
+                            - Criamos outro estado agora para o reccurence
+
+                            - E por fim criamos um estado para os errors
+
+
+                            - Ok agora vamos filtrar as categorias pelo type recebido
+
+                            - Depois vamos criar uma constante que vai receber o total de categorias com isCustom (vai ser um filter que filtra as com isCustom true) ai pegamos o length desse filter
+
+                            - Criamos a funcao que vai ser executada quando o formulario for enviado handleSubmit():
+                                - Ela vai receber o event que e do tipo React.SubmitEvent<HTMLFormElement>
+
+                                - Vai fazer o preventDefault()
+
+                                - vai setar o estado de erros como vazio
+
+                                - vai criar o payLoad que e vai ser um obj com { type, amount, categoryId, description }
+
+                                - vai fazer o validation usando o transactionSchema.safeParse(payload) passando o payload
+
+                                - Verifica se a validation passsou se nao faz um forEach setando os erros no estado
+
+                                - Tambem faz um if para verficar se a cagoria foi selecionada se nao lanca um erro no estado
+
+                                - Depois caso passe por todos os ifs ele chama a onSubmit() passando os dados, que e a funcao que recebemos por parametro
+
+                            - OK agora vamos retornar os elementos primeiro e o form que envolve tudo e no onSubmit() passamos o handleSubmit()
+
+                            - Certo primeio vamos fazer uma verificacao para ver se o showTypeToggle e true caso for ele vai exibir um elemento de toogle que vai ser usado para mudar o type e basicamente uma div com 2 botoes que no onClick ele seta o estado das categorias como null e seta o estado do tipo
+
+                            - Depois colocamos o <ValueInput />
+                                <ValueInput />:
+                                    - Vai ser o input que vai receber e formatar os valores da transacao
+
+                                    - Ele vai receber de parametro uma funcao de onChange
+
+                                    - Primeiro criamos um estado que vai armazenar o amount que fica no display que comeca com R$ 0,00
+
+                                    - Bom ai criamos uma funcao que vai ser executada quando onChange do input que basicamente vai pegar o valor do input e vai formatar com uma funcao que criamos vai setar nesse estado o valor e passar para a onChange que recebemos o valor numerico
+
+                                    - Ai passamos no input esse onChange que criamos
+
+                            - Ok ai depois dependendo do mode vamos exebir uma div que vai conter os dados para agendar ou planejar uma transacao onde so vai ser exibido em SCHEDULED e vai setar o status vai definer repeticao e data
+
+                            - Depois faz um map nas categorias e se tiver menos de 5 categorias personalizadas ele exibe o botao de criar quando tiver 5 categorias personalizadas criadas para cada tipo ele esconde esse botao
+
+                            - Depois o input da desc da categoria
+
+                            - Depois o botao de enviar
+
+                        - Ok agora o categoryForm
+                        <CategoryForm />
+                                - Ele recebe o initialType, uma funcao onBack() que vai fechar  o card caso enviada, a funcao de onSubmit() e o className para ser mesclado
+
+                                - Primeiro definimos um state que vai ser o typpe <- ele vai receber o initialType que e <'INCOME', 'OUTCOME'>
+
+                                - Criamos tambem um estado pro name e outro pro icon
+
+                                - Outro estado pros erros
+
+                                - Ok Criamos a funcao de enviar o formulario
+                                    - Primeiro vai cancelar o envento e.preventDefault()
+
+                                    - Vai fazer o validation com o schema de category que criamos com o zod verifcar se passou e setar os erros
+
+                                    - Ai verificamos se a um onSubmit() se ouver executamos passando os dados da validacao
+
+                                    - Verificamos se tem um onBack() se sim executamos ele
+
+                                - Ok retornamos o form que recebe essa funcao no onSubmit
+
+                                - Ai depois vem o input do nome
+
+                                - Depois vem o componente de selecionar o icone que e o:
+                                    <IconPicker />
+                                        - ok ele vai receber de props o value, type e onChange() -> funcao que avisa o pai quando o usuario escolheu um novo icone
+
+                                        - criamos o estado de isOpen()
+
+                                        - Criamos o containerRef que sera um useRef() que e a nossa aconra para o container pai
+
+                                        - Certo criamos um useEfect(,[]) que quando o componente carrega ele instala um ouvinte toda vez que clicar fora do elemento setIsOpen e false
+
+                                        - Ai filtramos as categorias
+
+                                        - Certo ai retornamos uma div principal com o ref(containerRef)
+
+                                        - Ai dentro uma label depois um button com os dados
+
+                                        - Ai depois o container com um map nos icons filtrados com um botao dentro com o onClick passando onChange()
+
+                                - Certo ai e passado pro iconPicker o type, o icon e o onChange que vai setar o icon e verificar se tem erros
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

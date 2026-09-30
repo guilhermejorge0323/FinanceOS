@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { InputHTMLAttributes } from 'react';
 
 interface BaseInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  type: 'INCOME' | 'OUTCOME';
   label: string;
   error?: string;
   containerClassName?: string;
@@ -14,6 +15,7 @@ export function BaseHomeInput({
   containerClassName,
   className,
   id,
+  type,
   ...props
 }: BaseInputProps) {
   const inputId = id || props.name || label.toLowerCase().replace(/\s+/g, '-');
@@ -32,16 +34,19 @@ export function BaseHomeInput({
 
       <input
         id={inputId}
+        type={type}
         {...props}
         className={clsx(
-          'text-xs text-slate-800 dark:text-white',
+          'text-sm text-slate-800 dark:text-white',
           'w-full',
           'px-3 py-2.5',
           'border bg-transparent rounded-xl',
           'focus:outline-none transition-all',
           error
             ? 'border-amber-500 focus:ring-2 focus:ring-amber-500/20'
-            : 'border-slate-200 dark:border-slate-800 dark:bg-slate-950 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500',
+            : type === 'INCOME'
+              ? 'border-slate-200 dark:border-slate-800 dark:bg-slate-950 focus:ring-2 focus:ring-primary-green/20 focus:border-primary-green'
+              : 'border-slate-200 dark:border-slate-800 dark:bg-slate-950 focus:ring-2 focus:ring-home-red/20 focus:border-home-red',
         )}
       />
       {error && (

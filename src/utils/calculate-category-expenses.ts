@@ -1,4 +1,5 @@
-import { calculateFinancialSummary } from './calculate-financial-summary';
+import { TransactionStatus, TransactionType } from '@prisma/client';
+import { calculateFinancialSummary, DashboardMode } from './calculate-financial-summary';
 
 export interface CategoryData {
   id: string;
@@ -9,29 +10,26 @@ export interface CategoryData {
 }
 
 const FIXED_CATEGORY_COLORS: Record<string, string> = {
-  moradia: '#3b82f6',     // Azul
-  alimentação: '#f59e0b', // Laranja / Amarelo
-  transporte: '#10b981',  // Verde
-  lazer: '#8b5cf6',       // Roxo
-  saúde: '#ef4444',       // Vermelho
-  outros: '#64748b',      // Cinza
+  moradia: '#3b82f6',
+  alimentação: '#f59e0b',
+  transporte: '#10b981',
+  lazer: '#8b5cf6',
+  saúde: '#ef4444',
+  outros: '#64748b',
 };
 
-// Cores de apoio caso a categoria seja nova/personalizada
+
 const PALETTE = [
   '#ec4899', '#06b6d4', '#84cc16', '#a855f7', '#f97316', '#14b8a6',
 ];
 
-
 function getConsistentColor(name: string, id: string): string {
   const normalizedName = name.trim().toLowerCase();
 
-  // Retorna a cor fixa se existir no dicionário
   if (FIXED_CATEGORY_COLORS[normalizedName]) {
     return FIXED_CATEGORY_COLORS[normalizedName];
   }
 
-  // Gera um índice persistente baseado na soma do código ASCII do ID
   let hash = 0;
   const str = id || name;
   for (let i = 0; i < str.length; i++) {
@@ -44,12 +42,34 @@ function getConsistentColor(name: string, id: string): string {
 export function calculateCategoryExpenses(
   transactions: any[] = [],
   allCategories: any[] = [],
+  mode: DashboardMode = 'CURRENT',
 ): CategoryData[] {
-  const expenseTransactions = transactions.filter(
-    (t) => t.type === 'OUTCOME',
-  );
 
-  const { totalExpenses } = calculateFinancialSummary(transactions);
+
+  const expenseTransactions = transactions.filter((t) => {
+    if (t.type !== TransactionType.OUTCOME && t.type !== 'OUTCOME') return false;
+
+    if (mode === 'CURRENT') {
+      return (
+        t.status === TransactionStatus.PAID ||
+        t.status === 'PAID' ||
+        t.status === TransactionStatus.SCHEDULED_PAID ||
+        t.status === 'SCHEDULED_PAID'
+      );
+    } else {
+      return (
+        t.status === TransactionStatus.SCHEDULED ||
+        t.status === 'SCHEDULED' ||
+        t.status === TransactionStatus.SCHEDULED_PAID ||
+        t.status === 'SCHEDULED_PAID' ||
+        t.status === TransactionStatus.PLANNED ||
+        t.status === 'PLANNED'
+      );
+    }
+  });
+
+
+  const { totalExpenses } = calculateFinancialSummary(transactions, mode);
 
   const grouped: Record<string, { id: string; name: string; amount: number }> = {};
 
@@ -80,7 +100,6 @@ export function calculateCategoryExpenses(
     }
   });
 
-  // Ordena por maior gasto sem alterar as cores atreladas a cada item
   return Object.values(grouped)
     .sort((a, b) => b.amount - a.amount)
     .map((item) => {
@@ -92,7 +111,7 @@ export function calculateCategoryExpenses(
         name: item.name,
         amount: item.amount,
         percentage,
-        color: getConsistentColor(item.name, item.id), // 🟢 Cor fixa determinística
+        color: getConsistentColor(item.name, item.id),
       };
     });
 }

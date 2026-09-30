@@ -1,6 +1,6 @@
 'use client';
 
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, ResponsiveContainer } from 'recharts';
 
 export interface CategoryData {
   id: string;
@@ -15,12 +15,16 @@ interface CategoryDonutChartProps {
 }
 
 export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
+    const chartData = data.map((item) => ({
+    ...item,
+    fill: item.color,
+  }));
   return (
     <div className='h-44 w-full'>
       <ResponsiveContainer width='100%' height='100%'>
         <PieChart>
           <Pie
-            data={data}
+            data={chartData}
             dataKey='amount'
             nameKey='name'
             cx='50%'
@@ -29,11 +33,7 @@ export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
             outerRadius={65}
             paddingAngle={3}
             stroke='none'
-          >
-            {data.map(entry => (
-              <Cell key={entry.id} fill={entry.color} />
-            ))}
-          </Pie>
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>

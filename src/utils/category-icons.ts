@@ -35,6 +35,7 @@ export const CATEGORY_ICONS: Record<string, CategoryIconItem> = {
   PawPrint: { label: 'Pets', emoji: '🐾', type: 'OUTCOME' },
   Wrench: { label: 'Manutenção / Reparos', emoji: '🔧', type: 'OUTCOME' },
   MinusCircle: { label: 'Outras Saídas', emoji: '➖', type: 'OUTCOME' },
+  LineChart: { label: 'Aplicações / Investimentos', emoji: '📊', type: 'OUTCOME' },
 };
 
 // Mapeamento simples de nome -> emoji

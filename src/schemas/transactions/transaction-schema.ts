@@ -7,4 +7,15 @@ export const transactionSchema = z.object({
     .positive('O valor precisa ser maior que R$ 0,00'),
   categoryId: z.number({ error: 'Selecione uma categoria para a transação' }),
   description: z.string().optional(),
+  status: z
+    .enum(['PAID', 'PENDING', 'SCHEDULED', 'PLANNED', 'SCHEDULED_PAID'])
+    .default('PAID'),
+  dueDate: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform(val => (val ? new Date(val) : undefined)),
+  recurrence: z.enum(['NONE', 'MONTHLY', 'YEARLY']).default('NONE'),
+  parentId: z.string().optional().nullable(),
 });
+
+export type TransactionInput = z.infer<typeof transactionSchema>;

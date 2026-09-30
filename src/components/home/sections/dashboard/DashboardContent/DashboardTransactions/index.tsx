@@ -1,13 +1,35 @@
-import { Suspense } from 'react';
+'use client';
+
+import { DashboardMode } from '@/utils/calculate-financial-summary';
 import { TransactionCard } from './TransactionCard';
+import { CategoryOption } from '@/components/home/ui/forms/TransactionForm';
 
-export function DashboardTransactions() {
+interface DashboardTransactionsProps {
+  transactions?: any[];
+  mode?: DashboardMode;
+  userCategories: CategoryOption[];
+}
+
+export function DashboardTransactions({
+  transactions = [],
+  mode = 'CURRENT',
+  userCategories,
+}: DashboardTransactionsProps) {
   return (
-    /* 🟢 Apenas 1 grid container lidando com os 2 cards diretamente */
     <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-        <TransactionCard type='input' />
+      <TransactionCard
+        transactions={transactions}
+        mode={mode}
+        categories={userCategories}
+        type='INCOME'
+      />
 
-        <TransactionCard type='output' />
+      <TransactionCard
+        transactions={transactions}
+        mode={mode}
+        categories={userCategories}
+        type='OUTCOME'
+      />
     </div>
   );
 }

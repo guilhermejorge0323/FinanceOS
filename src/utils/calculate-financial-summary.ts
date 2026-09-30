@@ -1,38 +1,63 @@
-type TransactionItem = {
-  type: string;
-  amount: number | any;
-};
+import { TransactionStatus, TransactionType } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/client';
 
-export function calculateFinancialSummary(transactions: TransactionItem[]) {
-  const summary = transactions.reduce(
-    (acc, item) => {
-      const amount = Number(item.amount);
+export type DashboardMode = 'CURRENT' | 'SCHEDULED';
 
-      if (item.type === 'INCOME') {
-        acc.totalIncomes += amount;
-        acc.incomesCount += 1;
-      } else if (item.type === 'EXPENSE' || item.type === 'OUTCOME') {
-        acc.totalExpenses += amount;
-        acc.expensesCount += 1;
+export interface FinancialSummaryTransactionItem {
+  amount: number | Decimal;
+  type: TransactionType;
+  status: TransactionStatus;
+}
+
+export function calculateFinancialSummary(
+  transactions: FinancialSummaryTransactionItem[],
+  mode: DashboardMode = 'CURRENT',
+) {
+  let totalIncomes = 0;
+  let incomesCount = 0;
+  let totalExpenses = 0;
+  let expensesCount = 0;
+
+  transactions.forEach(t => {
+    const amount = Number(t.amount);
+
+    if (mode === 'CURRENT') {
+      if (
+        t.status === TransactionStatus.PAID ||
+        t.status === TransactionStatus.SCHEDULED_PAID
+      ) {
+        if (t.type === TransactionType.INCOME) {
+          totalIncomes += amount;
+          incomesCount++;
+        } else {
+          totalExpenses += amount;
+          expensesCount++;
+        }
       }
+    } else if (mode === 'SCHEDULED') {
+      if (
+        t.status === TransactionStatus.SCHEDULED ||
+        t.status === TransactionStatus.PLANNED ||
+        t.status === TransactionStatus.SCHEDULED_PAID
+      ) {
+        if (t.type === TransactionType.INCOME) {
+          totalIncomes += amount;
+          incomesCount++;
+        } else {
+          totalExpenses += amount;
+          expensesCount++;
+        }
+      }
+    }
+  });
 
-      return acc;
-    },
-    {
-      totalIncomes: 0,
-      incomesCount: 0,
-      totalExpenses: 0,
-      expensesCount: 0,
-    },
-  );
-
-  const balance = summary.totalIncomes - summary.totalExpenses;
+  const balance = totalIncomes - totalExpenses;
 
   return {
     balance,
-    totalIncomes: summary.totalIncomes,
-    incomesCount: summary.incomesCount,
-    totalExpenses: summary.totalExpenses,
-    expensesCount: summary.expensesCount,
+    totalIncomes,
+    incomesCount,
+    totalExpenses,
+    expensesCount,
   };
 }

@@ -1,53 +1,61 @@
 'use client';
 
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { HomeTitle } from '@/components/home/ui/HomeTitle';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { getSession } from '@/lib/session';
+import { DashboardMode } from '@/utils/calculate-financial-summary';
 import { getFirstName } from '@/utils/getFirstName';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
 
-export function DashboardTopBar() {
-  const [activeTab, setActiveTab] = useState<'atual' | 'previsto'>('atual');
-  const [userName, setUserName] = useState<string>('');
+interface DashboardTopBarProps {
+  userName?: string;
+}
 
-  useEffect(() => {
-    async function getUserName() {
-      const session = await getSession();
-      const firstName = getFirstName(session?.name || '');
-      setUserName(firstName || 'user');
-    }
+export function DashboardTopBar({ userName }: DashboardTopBarProps) {
+  const firstName = getFirstName(userName || '');
+  const router = useRouter();
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
 
-    getUserName();
-  }, []);
+
+  const activeTab: DashboardMode =
+    searchParams.get('tab') === 'SCHEDULED' ? 'SCHEDULED' : 'CURRENT';
+
+  const handleTabChange = (tab: DashboardMode) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.push(`${pathName}?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className='flex flex-col md:flex-row gap-5 justify-between items-center w-full'>
-      <HomeTitle className='text-xl md:text-2xl'>Olá, {userName} 👋</HomeTitle>
+      <HomeTitle className='text-xl md:text-2xl'>
+        Olá, {firstName || 'usuário'} 👋
+      </HomeTitle>
 
       <div
         className={clsx(
-          'flex gap-1  bg-white rounded-3xl p-1 shadow-sm',
+          'flex gap-1 bg-white rounded-3xl p-1 shadow-sm',
           'dark:bg-secondary-dark-background',
         )}
       >
         <PrimaryButton
-          onClick={() => setActiveTab('atual')}
-          className={clsx('py-1.5 px-4 flex-1 rounded-3xl', {
-            'bg-primary-green text-white': activeTab === 'atual',
+          onClick={() => handleTabChange('CURRENT')}
+          className={clsx('py-1.5 px-4 flex-1 rounded-3xl transition-colors', {
+            'bg-primary-green text-white': activeTab === 'CURRENT',
             'text-muted-gray bg-transparent hover:text-black/70 dark:text-primary-text-dark dark:hover:text-white':
-              activeTab !== 'atual',
+              activeTab !== 'CURRENT',
           })}
         >
           Atual
         </PrimaryButton>
 
         <PrimaryButton
-          onClick={() => setActiveTab('previsto')}
-          className={clsx('py-1.5 px-4 flex-1 rounded-3xl', {
-            'bg-primary-green text-white': activeTab === 'previsto',
+          onClick={() => handleTabChange('SCHEDULED')}
+          className={clsx('py-1.5 px-4 flex-1 rounded-3xl transition-colors', {
+            'bg-primary-green text-white': activeTab === 'SCHEDULED',
             'text-muted-gray bg-transparent hover:text-black/70 dark:text-primary-text-dark dark:hover:text-white':
-              activeTab !== 'previsto',
+              activeTab !== 'SCHEDULED',
           })}
         >
           Previsto

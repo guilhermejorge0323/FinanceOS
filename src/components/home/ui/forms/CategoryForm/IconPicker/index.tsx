@@ -73,7 +73,7 @@ export function IconPicker({ value, type, onChange }: IconPickerProps) {
 
           <div
             className={clsx(
-              'grid grid-cols-5 gap-1.5',
+              'flex flex-wrap gap-1.5',
               'max-h-48',
               'pr-1',
               'overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full',

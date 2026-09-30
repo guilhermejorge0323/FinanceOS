@@ -1,10 +1,14 @@
 import { HomeTabContent } from '@/components/home/HomeTabContent';
 import { DashBoard } from '@/components/home/sections/dashboard';
 
-export default function Home() {
+interface HomeProps {
+  searchParams: Promise<{ tab?: string }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
   return (
     <HomeTabContent
-      dashboardSlot={<DashBoard />}
+      dashboardSlot={<DashBoard searchParams={searchParams} />}
     />
   );
 }

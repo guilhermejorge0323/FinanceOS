@@ -1,27 +1,41 @@
-import { getAuthedTransactions } from '@/lib/transactions/getAuthedTransactions';
+'use client'
+
+import { Category } from '@prisma/client';
 import { HomeCard } from '../../ui/DashboardCard';
-import { CategoryDonutChart, CategoryData } from './CategoryDonutChart';
+import { CategoryDonutChart } from './CategoryDonutChart';
 import { CategoryProgressBarList } from './CategoryProgressBarList';
 import { calculateCategoryExpenses } from '@/utils/calculate-category-expenses';
-import { calculateFinancialSummary } from '@/utils/calculate-financial-summary';
+import {
+  calculateFinancialSummary,
+  DashboardMode,
+  FinancialSummaryTransactionItem,
+} from '@/utils/calculate-financial-summary';
 import { formatCurrency } from '@/utils/format-currency';
-import { getAuthedCategories } from '@/lib/categories/getAuthedCategories';
 
-export async function CategoryCardDashboard() {
-  const [transactions, userCategories] = await Promise.all([
-    getAuthedTransactions(),
-    getAuthedCategories(),
-  ]);
+interface DashboardFinancialSummaryProps {
+  transactions?: FinancialSummaryTransactionItem[];
+  mode?: DashboardMode;
+  userCategories?: Category[];
+}
 
-  const expenseCategories = userCategories.filter(c => {
+export function CategoryCardDashboard({
+  transactions = [],
+  mode = 'CURRENT',
+  userCategories = [],
+}: DashboardFinancialSummaryProps) {
+  const expenseCategories = userCategories?.filter(c => {
     return c.type === 'OUTCOME';
   });
 
-  const categories = calculateCategoryExpenses(transactions, expenseCategories);
+  const categories = calculateCategoryExpenses(
+    transactions,
+    expenseCategories,
+    mode,
+  );
 
   const donutData = categories.filter(c => c.amount > 0);
 
-  const { totalExpenses } = calculateFinancialSummary(transactions);
+  const { totalExpenses } = calculateFinancialSummary(transactions, mode);
 
   const currentMonthYear = new Date().toLocaleDateString('pt-BR', {
     month: 'long',
@@ -35,7 +49,7 @@ export async function CategoryCardDashboard() {
       <div className='flex justify-between items-center'>
         <div>
           <p className='text-xs font-bold text-slate-400 uppercase tracking-wider'>
-            POR CATEGORIA
+            POR CATEGORIA {mode === 'SCHEDULED' && '(PREVISTO)'}
           </p>
           <p className='text-[10px] text-slate-400 mt-0.5'>
             Despesas de {formattedDate}

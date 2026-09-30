@@ -1,32 +1,52 @@
-import { PlusIcon } from 'lucide-react';
 import { HomeCard } from '../../ui/DashboardCard';
-import { ArrowTransaction } from '@/components/home/ui/ArrowTransaction';
-import { SecondaryButton } from '@/components/ui/SecondaryButton';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { Transaction } from './Transaction';
-import { getSession } from '@/lib/session';
-import { getTransactionsUser } from '@/lib/transactions/queries';
-import { createStaticTransactionAction } from '@/actions/test/transaction-action';
-import { formatCurrency } from '@/utils/format-currency';
-import { getAuthedTransactions } from '@/lib/transactions/getAuthedTransactions';
 import { TransactionCardHeader } from './TransactionCardHeader';
+import { DashboardMode } from '@/utils/calculate-financial-summary';
+import { CategoryOption } from '@/components/home/ui/forms/TransactionForm';
+import { Transaction } from './Transaction';
+import { TransactionStatus } from '@prisma/client';
 
-type TransactionCardProps = {
-  type: 'input' | 'output';
-};
+interface TransactionCardProps {
+  type: 'INCOME' | 'OUTCOME';
+  transactions?: any[];
+  mode?: DashboardMode;
+  categories: CategoryOption[];
+}
 
-export async function TransactionCard({ type }: TransactionCardProps) {
-  const isInput = type === 'input';
-  const actionLabel = isInput ? 'entrada' : 'saída';
-  const pluralLabel = isInput ? 'entradas' : 'saídas';
+export function TransactionCard({
+  type,
+  transactions = [],
+  mode = 'CURRENT',
+  categories,
+}: TransactionCardProps) {
+  const isIncome = type === 'INCOME';
+  const actionLabel = isIncome ? 'entrada' : 'saída';
+  const pluralLabel = isIncome ? 'entradas' : 'saídas';
 
-  const allTransactions = await getAuthedTransactions();
+  const filteredTransactions = transactions.filter(item => {
+    if (item.type !== type) return false;
 
-  const targetType = isInput ? 'INCOME' : 'OUTCOME';
-  const transactions = allTransactions.filter(item => item.type === targetType);
+    if (mode === 'CURRENT') {
+      return (
+        item.status === TransactionStatus.PAID ||
+        item.status === 'PAID' ||
+        item.status === TransactionStatus.SCHEDULED_PAID ||
+        item.status === 'SCHEDULED_PAID'
+      );
+    } else {
+      return (
+        item.status === TransactionStatus.SCHEDULED ||
+        item.status === 'SCHEDULED' ||
+        item.status === TransactionStatus.SCHEDULED_PAID ||
+        item.status === 'SCHEDULED_PAID' ||
+        item.status === TransactionStatus.PLANNED ||
+        item.status === 'PLANNED'
+      );
+    }
+  });
 
-  const totalAmount = transactions.reduce(
+  const totalAmount = filteredTransactions.reduce(
     (acc, item) => acc + Number(item.amount),
     0,
   );
@@ -34,18 +54,20 @@ export async function TransactionCard({ type }: TransactionCardProps) {
   return (
     <HomeCard className='p-0 h-95 flex flex-col justify-between overflow-hidden border border-slate-200/80 dark:border-slate-800/60 shadow-sm'>
       <TransactionCardHeader
+        mode={mode}
         type={type}
         totalAmount={totalAmount}
-        count={transactions.length}
+        count={filteredTransactions.length}
+        categories={categories}
       />
 
       <div className='flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 dark:divide-slate-800/30 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent'>
-        {transactions.length === 0 ? (
+        {filteredTransactions.length === 0 ? (
           <p className='p-4 text-xs text-center text-slate-400'>
             Nenhuma {actionLabel} cadastrada.
           </p>
         ) : (
-          transactions.map(item => (
+          filteredTransactions.map(item => (
             <Transaction key={item.id} type={type} data={item} />
           ))
         )}
@@ -57,8 +79,8 @@ export async function TransactionCard({ type }: TransactionCardProps) {
           className={clsx(
             'text-xs font-semibold hover:underline flex items-center gap-1 transition-all',
             {
-              'text-primary-green dark:text-emerald-400': isInput,
-              'text-home-red dark:text-rose-400': !isInput,
+              'text-primary-green dark:text-emerald-400': isIncome,
+              'text-home-red dark:text-rose-400': !isIncome,
             },
           )}
         >

@@ -8,20 +8,29 @@ import { useState } from 'react';
 import { BaseHomeInput } from '../BaseHomeInput';
 import { IconPicker } from './IconPicker';
 
-type CategoryFormProps = {
-  type: 'INCOME' | 'OUTCOME';
-  onBack: () => void;
-  className: string;
+export type CategoryFormProps = {
+  initialType?: 'INCOME' | 'OUTCOME';
+  onBack?: () => void;
+  onSubmit?: (data: { name: string; type: 'INCOME' | 'OUTCOME'; icon: string }) => void;
+  className?: string;
 };
 
-export function CategoryForm({ type, onBack, className }: CategoryFormProps) {
+export function CategoryForm({
+  initialType = 'INCOME',
+  onBack,
+  onSubmit,
+  className,
+}: CategoryFormProps) {
+  const [type] = useState<'INCOME' | 'OUTCOME'>(initialType);
   const [name, setName] = useState('');
   const [icon, setIcon] = useState(
     type === 'INCOME' ? 'Briefcase' : 'Utensils',
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleFormSubmit = (e: React.SubmitEvent) => {
+  const isIncome = type === 'INCOME';
+
+  const handleFormSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const validation = categorySchema.safeParse({
@@ -42,8 +51,15 @@ export function CategoryForm({ type, onBack, className }: CategoryFormProps) {
     }
 
     setErrors({});
-    console.log('Categoria cadastrada:', validation.data);
-    onBack();
+
+
+    if (onSubmit) {
+      onSubmit(validation.data);
+    }
+
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (
@@ -52,6 +68,7 @@ export function CategoryForm({ type, onBack, className }: CategoryFormProps) {
       className={cn('flex flex-col gap-4', className)}
     >
       <BaseHomeInput
+        type={type}
         label='Nome da categoria'
         placeholder='Ex: Alimentação, Investimentos...'
         maxLength={18}
@@ -75,17 +92,21 @@ export function CategoryForm({ type, onBack, className }: CategoryFormProps) {
       <div>
         <div className='flex gap-2 mt-2'>
           <button
+            type='submit'
             className={clsx(
               'flex flex-1 items-center justify-center gap-1.5',
-              'py-2',
+              'py-2.5',
               'rounded-xl',
               'text-xs font-bold text-white',
-              'bg-primary-green hover:bg-emerald-600',
-              'shadow-primary-green/10 cursor-pointer transition-colors',
+              'cursor-pointer transition-colors shadow-lg',
+              {
+                'bg-primary-green hover:bg-emerald-600 shadow-primary-green/20': isIncome,
+                'bg-home-red hover:bg-rose-600 shadow-home-red/20': !isIncome,
+              },
             )}
           >
             <SaveIcon className='w-3.5 h-3.5' />
-            Salvar
+            Salvar Categoria
           </button>
         </div>
       </div>

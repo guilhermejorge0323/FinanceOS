@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { useTab } from '@/components/home/context/homeContext';
 
 type HomeTabContentProps = {
@@ -12,7 +12,15 @@ export function HomeTabContent({ dashboardSlot }: HomeTabContentProps) {
 
   return (
     <>
-      {activeTab === 'Dashboard' && dashboardSlot}
+      {activeTab === 'Dashboard' && (
+        <Suspense
+          fallback={
+            <div className='h-40 w-full animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800/40' />
+          }
+        >
+          {dashboardSlot}
+        </Suspense>
+      )}
       {activeTab === 'Transações' && <div>Conteúdo das Transações</div>}
       {activeTab === 'Análise IA' && <div>Conteúdo da Análise IA</div>}
     </>
