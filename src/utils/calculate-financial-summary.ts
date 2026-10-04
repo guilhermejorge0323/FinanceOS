@@ -38,7 +38,8 @@ export function calculateFinancialSummary(
       if (
         t.status === TransactionStatus.SCHEDULED ||
         t.status === TransactionStatus.PLANNED ||
-        t.status === TransactionStatus.SCHEDULED_PAID
+        t.status === TransactionStatus.SCHEDULED_PAID ||
+        t.status === TransactionStatus.PENDING
       ) {
         if (t.type === TransactionType.INCOME) {
           totalIncomes += amount;

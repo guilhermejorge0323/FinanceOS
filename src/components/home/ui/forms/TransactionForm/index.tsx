@@ -41,7 +41,7 @@ export type TransactionFormProps = {
     type: TransactionType;
     amount: number;
     categoryId: number;
-    description: string;
+    name: string;
     status?: 'PAID' | 'PENDING' | 'SCHEDULED' | 'PLANNED';
     dueDate?: string;
     recurrence?: RecurrenceOption;
@@ -61,7 +61,7 @@ export function TransactionForm({
   const [type, setType] = useState<TransactionType>(initialType);
   const [amount, setAmount] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState('');
 
   const [status, setStatus] = useState<TransactionStatus>(
     mode === 'SCHEDULED' ? 'PENDING' : 'PLANNED',
@@ -90,7 +90,7 @@ export function TransactionForm({
       type,
       amount,
       categoryId,
-      description: description ?? '',
+      name,
     };
 
     const validation = transactionSchema.safeParse(payload);
@@ -115,7 +115,7 @@ export function TransactionForm({
       type,
       amount: Number(amount),
       categoryId,
-      description: description ?? '',
+      name,
       status: mode === 'SCHEDULED' ? status : 'PAID',
       dueDate:
         mode === 'SCHEDULED' && !isPlanned && dueDate
@@ -259,7 +259,7 @@ export function TransactionForm({
               disabled={isPlanned || isLoading}
               onChange={e => setRecurrence(e.target.value as RecurrenceOption)}
               className={clsx(
-                'w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-[#26334d] bg-white dark:bg-[#151c28] text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-700 h-[38px] transition-all',
+                'w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-[#26334d] bg-white dark:bg-[#151c28] text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-700 h-9.5 transition-all',
                 isPlanned
                   ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-[#111722]'
                   : 'cursor-pointer',
@@ -336,13 +336,13 @@ export function TransactionForm({
       </div>
 
       <BaseHomeInput
-        label='Descrição (Opcional)'
+        label='nome da transação'
         type={type}
         placeholder='Ex.: Mercado, salário, academia...'
-        value={description}
-        error={errors.description}
+        value={name}
+        error={errors.name}
         onChange={e => {
-          setDescription(e.target.value);
+          setName(e.target.value);
           if (errors.description)
             setErrors(prev => ({ ...prev, description: '' }));
         }}

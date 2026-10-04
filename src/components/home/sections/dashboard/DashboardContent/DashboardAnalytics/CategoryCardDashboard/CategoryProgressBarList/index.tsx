@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { CategoryData } from '../CategoryDonutChart';
 
 interface CategoryProgressBarListProps {
@@ -9,12 +10,12 @@ export function CategoryProgressBarList({
 }: CategoryProgressBarListProps) {
   return (
     <div
-      className='space-y-3 h-55 overflow-y-auto pr-3
-                 [&::-webkit-scrollbar]:w-1.5
-                 [&::-webkit-scrollbar-thumb]:bg-slate-200
-                 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700
-                 [&::-webkit-scrollbar-thumb]:rounded-full
-                 [&::-webkit-scrollbar-track]:bg-transparent'
+      className={clsx(
+        'space-y-3 h-55 overflow-y-auto pr-3',
+        '[&::-webkit-scrollbar]:w-1.5',
+        '[&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700',
+        '[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent',
+      )}
     >
       {categories.map(item => (
         <div key={item.id} className='space-y-1'>

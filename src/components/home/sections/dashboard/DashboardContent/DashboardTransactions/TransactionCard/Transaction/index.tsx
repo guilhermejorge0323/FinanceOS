@@ -11,7 +11,7 @@ type TransactionProps = {
   type: 'INCOME' | 'OUTCOME';
   data: {
     id: string;
-    description: string;
+    name: string;
     amount: any;
     date: Date;
     category?: { name: string; icon: string } | null;
@@ -41,7 +41,7 @@ export function Transaction({ type, data }: TransactionProps) {
         </div>
         <div className='flex flex-col gap-1.5 min-w-0 flex-1'>
           <p className='text-xs font-semibold text-slate-800 dark:text-slate-200 truncate'>
-            {data.description}
+            {data.name}
           </p>
           <div className='flex gap-1.5 sm:gap-2 items-center min-w-0'>
             <span className='text-[9px] font-medium px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-slate-500 dark:text-slate-400 border border-slate-200/40 dark:border-slate-700/40 truncate shrink-0 max-w-20 sm:max-w-25'>

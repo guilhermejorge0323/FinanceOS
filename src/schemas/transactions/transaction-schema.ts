@@ -6,7 +6,7 @@ export const transactionSchema = z.object({
     .number({ error: 'Informe um valor numérico válido' })
     .positive('O valor precisa ser maior que R$ 0,00'),
   categoryId: z.number({ error: 'Selecione uma categoria para a transação' }),
-  description: z.string().optional(),
+  name: z.string().min(1, 'O nome é obrigatório').max(50, 'O nome deve ter no máximo 50 caracteres'),
   status: z
     .enum(['PAID', 'PENDING', 'SCHEDULED', 'PLANNED', 'SCHEDULED_PAID'])
     .default('PAID'),

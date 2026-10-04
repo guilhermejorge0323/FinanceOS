@@ -2,13 +2,17 @@
 
 import { ReactNode, Suspense } from 'react';
 import { useTab } from '@/components/home/context/homeContext';
+import { useTransactionsRealtime } from '@/hooks/use-transactions-realtime';
 
 type HomeTabContentProps = {
+  userId: string;
   dashboardSlot: ReactNode;
 };
 
-export function HomeTabContent({ dashboardSlot }: HomeTabContentProps) {
+export function HomeTabContent({ userId, dashboardSlot }: HomeTabContentProps) {
   const { activeTab } = useTab();
+
+  useTransactionsRealtime(userId);
 
   return (
     <>

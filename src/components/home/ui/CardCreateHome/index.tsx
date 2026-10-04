@@ -41,7 +41,7 @@ export function CardCreateHome({
     type: 'INCOME' | 'OUTCOME';
     amount: number;
     categoryId: number;
-    description: string;
+    name: string;
     status?: 'PAID' | 'PENDING' | 'SCHEDULED' | 'PLANNED';
     dueDate?: string | Date;
     recurrence?: 'NONE' | 'MONTHLY' | 'YEARLY';

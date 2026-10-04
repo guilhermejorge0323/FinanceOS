@@ -41,7 +41,9 @@ export function TransactionCard({
         item.status === TransactionStatus.SCHEDULED_PAID ||
         item.status === 'SCHEDULED_PAID' ||
         item.status === TransactionStatus.PLANNED ||
-        item.status === 'PLANNED'
+        item.status === 'PLANNED' ||
+        item.status === TransactionStatus.PENDING||
+        item.status === 'PENDING'
       );
     }
   });
@@ -84,7 +86,7 @@ export function TransactionCard({
             },
           )}
         >
-          Ver todas as {pluralLabel} &rarr;
+          Ver todas as {pluralLabel}
         </Link>
       </div>
     </HomeCard>

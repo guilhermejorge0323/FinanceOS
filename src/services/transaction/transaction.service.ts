@@ -1,12 +1,16 @@
 import { prisma } from '@/lib/prisma';
-import { RecurrenceOption, TransactionStatus, TransactionType } from '@prisma/client';
+import {
+  RecurrenceOption,
+  TransactionStatus,
+  TransactionType,
+} from '@prisma/client';
 
 export type CreateTransactionInput = {
   userId: string;
   type: TransactionType;
   amount: number;
   categoryId: number;
-  description: string;
+  name: string;
   date?: Date | string;
   status: TransactionStatus;
   dueDate?: Date | string | null;
@@ -44,9 +48,12 @@ export class TransactionService {
         type: data.type,
         amount: data.amount,
         categoryId: data.categoryId,
-        description: data.description,
+        name: data.name,
         date: data.date ? new Date(data.date) : new Date(),
         status: data.status || TransactionStatus.PAID,
+        dueDate: data.dueDate ? new Date(data.dueDate) : null,
+        recurrence: data.recurrence || RecurrenceOption.NONE,
+        parentId: data.parentId || null,
       },
       include: {
         category: {

@@ -63,7 +63,9 @@ export function calculateCategoryExpenses(
         t.status === TransactionStatus.SCHEDULED_PAID ||
         t.status === 'SCHEDULED_PAID' ||
         t.status === TransactionStatus.PLANNED ||
-        t.status === 'PLANNED'
+        t.status === 'PLANNED' ||
+        t.status === TransactionStatus.PENDING ||
+        t.status === 'PENDING'
       );
     }
   });

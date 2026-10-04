@@ -1,8 +1,10 @@
 'use server';
 
+import { triggerTransactionUpdate } from '@/lib/pusher/pusher-server';
 import { getSession } from '@/lib/session';
 import { transactionSchema } from '@/schemas/transactions/transaction-schema';
 import { TransactionService } from '@/services/transaction/transaction.service';
+import { TransactionStatus } from '@prisma/client';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function createTransactionAction(rawData: unknown) {
@@ -24,33 +26,61 @@ export async function createTransactionAction(rawData: unknown) {
       };
     }
 
-    const { type, amount, categoryId, description, status, dueDate, recurrence, parentId } = validation.data;
+    const {
+      type,
+      amount,
+      categoryId,
+      name,
+      status,
+      dueDate,
+      recurrence,
+      parentId,
+    } = validation.data;
+
+    let finalStatus: TransactionStatus = status || TransactionStatus.PAID;
+
+    if (status === TransactionStatus.PENDING && dueDate) {
+      const targetDate = new Date(dueDate);
+      const now = new Date();
+
+      const isCurrentMonth =
+        targetDate.getMonth() === now.getMonth() &&
+        targetDate.getFullYear() === now.getFullYear();
+
+      if (!isCurrentMonth && targetDate > now) {
+        finalStatus = TransactionStatus.SCHEDULED;
+      }
+    }
 
     const transaction = await TransactionService.createTransaction({
       userId: session.userId,
       type,
       amount,
       categoryId,
-      description: description ?? '',
-      status,
+      name,
+      status: finalStatus,
+      date: dueDate ?? new Date(),
       dueDate,
       recurrence,
       parentId,
-
     });
 
-    revalidateTag(`transactions-${session.userId}`, '');
+    const serializedTransaction = {
+      ...transaction,
+      amount: Number(transaction.amount),
+      date: transaction.date.toISOString(),
+      createdAt: transaction.createdAt.toISOString(),
+      dueDate: transaction.dueDate ? transaction.dueDate.toISOString() : null,
+    };
+
+    await triggerTransactionUpdate(session.userId, 'created', serializedTransaction)
+
+    revalidateTag(`transactions-${session.userId}`, 'default');
     revalidatePath('/home');
 
     return {
       success: true,
-      data: {
-        ...transaction,
-        amount: Number(transaction.amount),
-        date: transaction.date.toISOString(),
-        createdAt: transaction.createdAt.toISOString(),
-        dueDate: transaction.dueDate ? transaction.dueDate.toISOString() : null,
-      },
+      data: serializedTransaction
     };
   } catch (error) {
     console.error('Erro ao criar transação:', error);
