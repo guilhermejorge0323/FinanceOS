@@ -6,7 +6,7 @@ import { getSession } from '@/lib/session';
 interface HomeProps {
   searchParams: Promise<{ tab?: string }>;
 }
-
+export const dynamic = 'force-dynamic';
 async function HomeContent({ searchParams }: HomeProps) {
   const session = await getSession();
 
