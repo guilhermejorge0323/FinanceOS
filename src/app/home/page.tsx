@@ -2,12 +2,15 @@ import { Suspense } from 'react';
 import { HomeTabContent } from '@/components/home/HomeTabContent';
 import { DashBoard } from '@/components/home/sections/dashboard';
 import { getSession } from '@/lib/session';
+import { connection } from 'next/server';
 
 interface HomeProps {
   searchParams: Promise<{ tab?: string }>;
 }
-export const dynamic = 'force-dynamic';
+
+
 async function HomeContent({ searchParams }: HomeProps) {
+    await connection();
   const session = await getSession();
 
   return (
