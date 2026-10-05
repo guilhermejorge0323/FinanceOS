@@ -54,7 +54,7 @@ export function Transaction({ type, data }: TransactionProps) {
         </div>
       </div>
 
-      {/* Lado Direito - Valor Ajustado e Ações */}
+
       <div className='flex items-center gap-1.5 sm:gap-2 shrink-0'>
         <p
           className={clsx(
