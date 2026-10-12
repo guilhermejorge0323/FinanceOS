@@ -10,18 +10,16 @@ export function AreaImageS1() {
           'blur-3xl opacity-30 bg-primary-green',
         )}
       ></div>
-      <div
+
+      <img
+        src='images/AppImage.png'
+        alt='Home page do App'
         className={clsx(
-          'h-60 md:h-80 lg:h-118 w-full',
+          'h-35 md:h-80 lg:h-118 w-full',
           'rounded-lg',
           'relative z-1',
-          'bg-[#0b1120]',
-          'flex items-center justify-center',
-          'text-3xl font-bold',
         )}
-      >
-        Imagem
-      </div>
+      />
     </div>
   );
 }

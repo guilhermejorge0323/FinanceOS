@@ -62,13 +62,12 @@ export function TransactionForm({
   const [amount, setAmount] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [name, setName] = useState('');
+  const todayString = new Date().toISOString().split('T')[0];
 
   const [status, setStatus] = useState<TransactionStatus>(
     mode === 'SCHEDULED' ? 'PENDING' : 'PLANNED',
   );
-  const [dueDate, setDueDate] = useState<string>(
-    new Date().toISOString().split('T')[0],
-  );
+  const [dueDate, setDueDate] = useState<string>(todayString);
   const [recurrence, setRecurrence] = useState<RecurrenceOption>('NONE');
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -119,7 +118,7 @@ export function TransactionForm({
       status: mode === 'SCHEDULED' ? status : 'PAID',
       dueDate:
         mode === 'SCHEDULED' && !isPlanned && dueDate
-          ? new Date(dueDate).toISOString()
+          ? new Date(`${dueDate}T12:00:00`).toISOString()
           : undefined,
       recurrence: mode === 'SCHEDULED' && !isPlanned ? recurrence : 'NONE',
     });
@@ -231,6 +230,7 @@ export function TransactionForm({
               <input
                 type='date'
                 value={dueDate}
+                min={todayString}
                 disabled={isPlanned || isLoading}
                 onChange={e => setDueDate(e.target.value)}
                 className={clsx(

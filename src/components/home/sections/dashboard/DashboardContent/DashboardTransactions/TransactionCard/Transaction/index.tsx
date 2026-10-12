@@ -1,8 +1,11 @@
 'use client';
 
 import { deleteTransactionAction } from '@/actions/transaction/delete-transaction-action';
+import { renderStatusChip } from '@/helper/renderStatusChip';
 import { getCategoryIcon } from '@/utils/category-icons';
 import { formatCurrency } from '@/utils/format-currency';
+import { formatStringDate } from '@/utils/formatStringDate';
+import { TransactionStatus } from '@prisma/client';
 import clsx from 'clsx';
 import { Loader2, Trash2Icon } from 'lucide-react';
 import { useTransition } from 'react';
@@ -15,6 +18,7 @@ type TransactionProps = {
     amount: any;
     date: Date;
     category?: { name: string; icon: string } | null;
+    status: TransactionStatus;
   };
 };
 
@@ -33,6 +37,8 @@ export function Transaction({ type, data }: TransactionProps) {
     });
   };
 
+
+
   return (
     <div className='group px-3 sm:px-5 py-3 flex items-center justify-between gap-2 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors'>
       <div className='flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1'>
@@ -43,18 +49,22 @@ export function Transaction({ type, data }: TransactionProps) {
           <p className='text-xs font-semibold text-slate-800 dark:text-slate-200 truncate'>
             {data.name}
           </p>
-          <div className='flex gap-1.5 sm:gap-2 items-center min-w-0'>
+
+          <div className='flex gap-1.5 sm:gap-2 items-center min-w-0 flex-wrap sm:flex-nowrap'>
             <span className='text-[9px] font-medium px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-slate-500 dark:text-slate-400 border border-slate-200/40 dark:border-slate-700/40 truncate shrink-0 max-w-20 sm:max-w-25'>
-              {data.category?.name || 'Geral'}
+              {data.category?.name}
             </span>
+
+
+            {renderStatusChip(data.status)}
+
             <span className='text-[9px] text-slate-400 dark:text-slate-500 whitespace-nowrap shrink-0'>
-              {new Date(data.date).toLocaleDateString('pt-BR')}
+              {formatStringDate(data.date)}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Lado Direito - Valor Ajustado e Ações */}
       <div className='flex items-center gap-1.5 sm:gap-2 shrink-0'>
         <p
           className={clsx(
