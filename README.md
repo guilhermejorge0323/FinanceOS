@@ -20,53 +20,59 @@ O **Finance OS** é uma aplicação web de gestão financeira completa, moderna 
 
 ## 🗄️ Esquema da Base de Dados (Prisma Schema)
 
-Abaixo encontra-se a tabela detalhada com todas as entidades, campos, restrições e relacionamentos modelados no Prisma:
+Abaixo encontra-se a tabela detalhada com todas as entidades, campos, tipos e restrições fiéis ao schema implementado:
 
 | Tabela / Modelo | Campo | Tipo / Restrições | Descrição e Relacionamentos |
 | :--- | :--- | :--- | :--- |
-| **`USER`** | `name` | String (limite 50 caracteres) | Nome do utilizador. |
-| | `email` | String (Único) | E-mail de autenticação único no sistema. |
-| | `passwordHash` | String (Mapeado para `password_hash`) | Hash seguro da senha. |
-| | *Relacionamentos* | - | Um utilizador possui múltiplas categorias, transações, budgets, scores, cartões de dashboard, insights de IA e notificações. |
-| **`CATEGORY`** | `id` | Int (Auto-incremento) | Identificador único da categoria. |
-| | `userId` | ID Relacionado | Utilizador dono da categoria (1 para 1). |
-| | `name` | String (limite 18 caracteres) | Nome da categoria. |
-| | `type` | ENUM (`INCOME`, `OUTCOME`) | Tipo da categoria (Entrada ou Saída). |
-| | `icon` | String | Nome do ícone referenciado no objeto de ícones do sistema. |
-| | `isCustom` | Boolean (Padrão: `false`) | Define se foi criada pelo utilizador ou se é padrão do sistema. |
-| | *Índices* | `@@index([userId, type])` | Otimiza buscas filtrando por utilizador e tipo simultaneamente. |
-| **`TRANSACTION`** | `userId` | ID Relacionado | Utilizador dono da transação. |
-| | `categoryId` | ID Relacionado | Categoria associada à transação. |
-| | `description` | String (limite 100 caracteres) | Descrição da movimentação financeira. |
-| | `amount` | Decimal (`db.Decimal(12,2)`) | Valor monetário exato (até 12 dígitos, 2 decimais). |
-| | `type` | ENUM (`INCOME`, `OUTCOME`) | Tipo da transação. |
-| | `status` | ENUM (`PAID`, `PENDING`, `SCHEDULED`, `SCHEDULED_PAID`, `PLANNED`) | Status atual (Padrão: `PAID`). |
-| | `date` | DateTime | Data de criação/registo da transação. |
-| | `dueDate` | DateTime (Opcional) | Data de vencimento para contas agendadas. |
-| | `recurrence` | ENUM (`NONE`, `MONTHLY`, `YEARLY`) | Padrão de repetição (Padrão: `NONE`). |
-| | `parentId` | ID Relacionado (Opcional) | Auto-relacionamento para transações recorrentes/filhas. |
-| | *Índices* | `@@index([userId, date, type])`<br>`@@index([userId, status, dueDate])` | Otimiza listagens de dashboards por período e consultas de contas agendadas/a vencer. |
-| **`BUDGET`** | `userId` / `categoryId` | IDs Relacionados | Dono e categoria do orçamento planeado. |
-| | `amountAllocated` | Decimal | Valor financeiro alocado para o teto de gastos. |
-| | `monthYear` | String (`mm-yyyy`) | Mês de referência do orçamento. |
-| | *Restrições* | `@@unique([userId, categoryId, monthYear])` | Impede duplicação de budgets para a mesma categoria no mesmo mês. |
-| **`FINANCIAL_SCORE`**| `userId` | ID Relacionado | Utilizador avaliado. |
-| | `totalScore` | Int (0 a 100) | Pontuação geral da saúde financeira mensal. |
-| | Sub-notas | `incomeVsOutcomeScore`, `planningAdherenceScore`, `investmentScore`, `historyConsistencyScore` | Métricas detalhadas de entradas vs saídas, aderência a planos, investimentos e consistência. |
-| | `monthYear` | String | Mês e ano de referência do cálculo. |
+| **`User`** *(users)* | `id` | String (`@id`, cuid) | Identificador único do utilizador. |
+| | `name` | String (`@db.VarChar(50)`) | Nome do utilizador. |
+| | `email` | String (`@unique`) | E-mail único no sistema. |
+| | `passwordHash` | String (`@map("password_hash")`) | Hash seguro da senha. |
+| | `createdAt` | DateTime | Data de criação do registo. |
+| | *Relações* | - | Liga-se a `Category`, `Transaction`, `Budget`, `FinancialScore`, `UserDashCard`, `AiInsight` e `Notification`. |
+| **`Category`** *(categories)* | `id` | Int (`@id`, autoincrement) | Identificador único da categoria. |
+| | `userId` | String (`@map("user_id")`) | Chave estrangeira para o utilizador dono. |
+| | `name` | String (`@db.VarChar(18)`) | Nome da categoria. |
+| | `type` | `TransactionType` (Enum) | Tipo da categoria (`INCOME` ou `OUTCOME`). |
+| | `icon` | String (`@db.VarChar(30)`) | Nome do ícone referenciado no objeto. |
+| | `isCustom` | Boolean (Padrão: `false`) | Define se é personalizada pelo utilizador. |
+| | *Índices* | `@@index([userId, type])` | Otimiza buscas por utilizador e tipo. |
+| **`Transaction`** *(transactions)* | `id` | String (`@id`, cuid) | Identificador único da transação. |
+| | `userId` / `categoryId` | String, Int | Chaves estrangeiras de utilizador e categoria. |
+| | `name` | String (`@db.VarChar(100)`) | Descrição/Nome da transação. |
+| | `amount` | Decimal (`@db.Decimal(12, 2)`) | Valor monetário exato. |
+| | `type` | `TransactionType` (Enum) | Tipo de transação (`INCOME` ou `OUTCOME`). |
+| | `status` | `TransactionStatus` (Enum) | Status (`PAID`, `PENDING`, `SCHEDULED`, `SCHEDULED_PAID`, `PLANNED`). |
+| | `date` / `dueDate` | DateTime? (`@db.Date`) | Data da transação e data de vencimento opcional. |
+| | `recurrence` | `RecurrenceOption` (Enum) | Repetição (`NONE`, `MONTHLY`, `YEARLY`). |
+| | `parentId` | String? (`@map("parent_id")`) | Auto-relacionamento para transações recorrentes. |
+| | *Índices* | `@@index([userId, date, type])`<br>`@@index([userId, status, dueDate])` | Otimiza listagens de dashboard e contas a vencer/agendadas. |
+| **`Budget`** *(budgets)* | `id` | String (`@id`, cuid) | Identificador único do orçamento. |
+| | `userId` / `categoryId` | String, Int | Utilizador e categoria associados. |
+| | `amountAllocated` | Decimal (`@db.Decimal(12, 2)`) | Valor alocado para o teto de gastos. |
+| | `monthYear` | String (`@map("month_year")`) | Mês e ano de referência. |
+| | *Restrições* | `@@unique([userId, categoryId, monthYear])` | Evita duplicados para a mesma categoria no mesmo mês. |
+| **`FinancialScore`** *(financial_scores)* | `id` | String (`@id`, cuid) | Identificador único do score. |
+| | `userId` | String | Utilizador avaliado. |
+| | `totalScore` | Int | Pontuação geral (0 a 100). |
+| | Sub-notas | `incomeVsOutcomeScore`, `planningAdherenceScore`, `investmentScore`, `historyConsistencyScore` | Sub-métricas detalhadas de saúde financeira (padrão `0`). |
+| | `monthYear` | String | Mês e ano de referência (ex: `'08-2026'`). |
 | | *Restrições* | `@@unique([userId, monthYear])` | Garante apenas um score por utilizador por mês. |
-| **`USER_DASHCARD`**| `userId` | ID Relacionado | Dono do card personalizado (Máximo 5 por utilizador). |
-| | `title` / `cardType` | String, ENUM (`Summary`, `CATEGORY_PROGRESS`, `Meta`) | Configuração visual e tipo do card no dashboard. |
-| | `targetAmount?` / `filterCategoryId?` | Campos Opcionales | Metas de valores ou filtros por categoria específica. |
-| | `positionIndex` | Int | Ordem de exibição na grelha do dashboard. |
-| **`AI_INSIGHT`** | `userId` | ID Relacionado | Utilizador associado ao relatório. |
-| | `monthYear` / `insightType` | String, ENUM | Período e classificação da análise gerada por IA. |
-| | `title` / `content` | String, Text | Título e conteúdo explicativo da inteligência artificial. |
-| **`NOTIFICATION`**| `userId` | ID Relacionado | Destinatário da notificação. |
-| | `title` / `type` | String, ENUM (`ALERT`, `AI`, `BILLING`, `GOAL`) | Detalhes do alerta do sistema. |
-| | `read` / `expiresAt` | Boolean, DateTime | Estado de leitura e data limite para exclusão automática. |
-| | *Índices* | `@@index([userId, expiresAt])`<br>`@@index([userId, read])` | Otimiza a limpeza por background jobs e contagem de mensagens não lidas. |
-
+| **`UserDashCard`** *(user_dash_cards)* | `id` | String (`@id`, cuid) | Identificador único do card. |
+| | `userId` | String | Utilizador dono do card personalizado. |
+| | `title` / `cardType` | String, String | Título e tipo do card no dashboard. |
+| | `targetAmount?` | Decimal? (`@db.Decimal(12, 2)`) | Valor de meta opcional. |
+| | `filterCategoryId?` | Int? | Categoria associada opcional. |
+| | `positionIndex` | Int | Posição de ordenação na grelha. |
+| **`AiInsight`** *(ai_insights)* | `id` | String (`@id`, cuid) | Identificador único do relatório de IA. |
+| | `userId` / `monthYear` | String, String | Utilizador e período da análise. |
+| | `insightType` / `title` | String, String | Tipo e título do insight gerado. |
+| | `content` | String (`@db.Text`) | Conteúdo descritivo detalhado gerado por IA. |
+| **`Notification`** *(notifications)* | `id` | String (`@id`, cuid) | Identificador único da notificação. |
+| | `userId` | String | Destinatário da notificação. |
+| | `title` / `type` | String, `NotificationType` (Enum) | Título e tipo (`ALERT`, `AI`, `BILLING`, `GOAL`). |
+| | `read` / `expiresAt` | Boolean, DateTime? | Estado de leitura e data de expiração. |
+| | *Índices* | `@@index([userId, expiresAt])`<br>`@@index([userId, read])` | Otimiza limpeza automática por background jobs e contagem de não lidas. |
 ---
 
 ## ⚙️ Funções Utilitárias e Regras de Negócio (`/utils`)
