@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     }
 
     // Remove o 'default' para garantir que a cache da tag é limpa de imediato
-    revalidateTag(`transactions-${userId}`);
+    revalidateTag(`transactions-${userId}`, 'default');
 
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (error) {
