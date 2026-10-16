@@ -6,7 +6,6 @@ import { LoginForm } from './Forms/LoginForm';
 import { RegisterForm } from './Forms/RegisterForm';
 import { SocialAuth } from './SocialAuth';
 import { Logo } from '@/components/ui/logo';
-import { SunIcon } from 'lucide-react';
 import { ThemeButton } from '@/components/theme/ThemeButton';
 import clsx from 'clsx';
 

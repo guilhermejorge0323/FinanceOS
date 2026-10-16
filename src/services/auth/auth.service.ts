@@ -90,8 +90,12 @@ export class AuthService {
       where: { email },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
       throw new Error('Email ou senha invalidos');
+    }
+
+    if (!user.passwordHash || user.passwordHash === '') {
+      throw new Error('Esta conta foi criada com o Google. Por favor, utilize o botão do Google para entrar.');
     }
 
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
@@ -100,6 +104,7 @@ export class AuthService {
       throw new Error('Email ou senha invalidos');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }

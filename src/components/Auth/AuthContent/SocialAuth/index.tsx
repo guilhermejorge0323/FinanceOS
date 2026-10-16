@@ -1,3 +1,6 @@
+'use client';
+
+import { signIn } from 'next-auth/react';
 import clsx from 'clsx';
 import Image from 'next/image';
 
@@ -11,13 +14,15 @@ export function SocialAuth() {
       </div>
 
       <button
+      onClick={() => signIn('google', { callbackUrl: '/home' })}
         className={clsx(
           'w-full',
           'flex items-center justify-center gap-2',
           'py-2.5',
           'border border-slate-300 rounded-xl',
           'text-sm font-medium',
-          'dark:border-border-color dark:text-white'
+          'dark:border-border-color dark:text-white',
+          'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer'
         )}
       >
         <Image src='/icons/google.svg' alt='Google' width={18} height={18} />

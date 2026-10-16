@@ -9,7 +9,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'User ID é obrigatório' }, { status: 400 });
     }
 
-    revalidateTag(`transactions-${userId}`, 'default');
+    // Remove o 'default' para garantir que a cache da tag é limpa de imediato
+    revalidateTag(`transactions-${userId}`);
 
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (error) {

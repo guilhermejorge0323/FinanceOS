@@ -78,10 +78,7 @@ export const processScheduledTransactionsTask = schedules.task({
           console.error(`Erro ao revalidar cache do usuário ${t.userId}:`, error);
         }
 
-        await triggerTransactionUpdate(t.userId, 'updated', {
-          id: t.id,
-          status: TransactionStatus.SCHEDULED_PAID,
-        });
+        await triggerTransactionUpdate(t.userId, 'updated', t);
       }
     }
 
