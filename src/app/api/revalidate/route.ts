@@ -6,7 +6,10 @@ export async function POST(request: Request) {
     const { userId } = await request.json();
 
     if (!userId) {
-      return NextResponse.json({ message: 'User ID é obrigatório' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'User ID é obrigatório' },
+        { status: 400 },
+      );
     }
 
     // Remove o 'default' para garantir que a cache da tag é limpa de imediato
@@ -14,6 +17,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (error) {
-    return NextResponse.json({ message: 'Erro ao revalidar cache', error }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Erro ao revalidar cache', error },
+      { status: 500 },
+    );
   }
 }
