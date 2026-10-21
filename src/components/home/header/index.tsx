@@ -9,7 +9,7 @@ import { ThemeButton } from '@/components/theme/ThemeButton';
 import clsx from 'clsx';
 import { Notifications } from './Notifications';
 import { UserButton } from './UserButton';
-import { fetchRealDate } from '@/utils/fetchRealDate';
+import { fetchRealDate } from '@/utils/Date/fetchRealDate';
 
 interface HeaderProps {
   onOpenSidebar: () => void;

@@ -42,10 +42,16 @@ export function TransactionCard({
         item.status === 'SCHEDULED_PAID' ||
         item.status === TransactionStatus.PLANNED ||
         item.status === 'PLANNED' ||
-        item.status === TransactionStatus.PENDING||
+        item.status === TransactionStatus.PENDING ||
         item.status === 'PENDING'
       );
     }
+  });
+
+  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+    const dateA = new Date(a.date || a.createdAt).getTime();
+    const dateB = new Date(b.date || b.createdAt).getTime();
+    return dateB - dateA;
   });
 
   const totalAmount = filteredTransactions.reduce(
@@ -64,12 +70,12 @@ export function TransactionCard({
       />
 
       <div className='flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 dark:divide-slate-800/30 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent'>
-        {filteredTransactions.length === 0 ? (
+        {sortedTransactions.length === 0 ? (
           <p className='p-4 text-xs text-center text-slate-400'>
             Nenhuma {actionLabel} cadastrada.
           </p>
         ) : (
-          filteredTransactions.map(item => (
+          sortedTransactions.map(item => (
             <Transaction key={item.id} type={type} data={item} />
           ))
         )}

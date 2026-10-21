@@ -73,14 +73,18 @@ export async function createTransactionAction(rawData: unknown) {
       dueDate: transaction.dueDate ? transaction.dueDate.toISOString() : null,
     };
 
-    await triggerTransactionUpdate(session.userId, 'created', serializedTransaction)
+    await triggerTransactionUpdate(
+      session.userId,
+      'created',
+      serializedTransaction,
+    );
 
     revalidateTag(`transactions-${session.userId}`, 'default');
     revalidatePath('/home');
 
     return {
       success: true,
-      data: serializedTransaction
+      data: serializedTransaction,
     };
   } catch (error) {
     console.error('Erro ao criar transação:', error);

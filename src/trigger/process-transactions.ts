@@ -17,7 +17,7 @@ export const processScheduledTransactionsTask = schedules.task({
       0,
       23,
       59,
-      59
+      59,
     );
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -34,11 +34,13 @@ export const processScheduledTransactionsTask = schedules.task({
 
     if (scheduledToPending.length > 0) {
       await prisma.transaction.updateMany({
-        where: { id: { in: scheduledToPending.map((t) => t.id) } },
+        where: { id: { in: scheduledToPending.map(t => t.id) } },
         data: { status: TransactionStatus.PENDING },
       });
 
-      const userIdsToRevalidate = Array.from(new Set(scheduledToPending.map((t) => t.userId)));
+      const userIdsToRevalidate = Array.from(
+        new Set(scheduledToPending.map(t => t.userId)),
+      );
       for (const userId of userIdsToRevalidate) {
         try {
           await fetch(`${baseUrl}/api/revalidate`, {
@@ -47,7 +49,10 @@ export const processScheduledTransactionsTask = schedules.task({
             body: JSON.stringify({ userId }),
           });
         } catch (error) {
-          console.error(`Erro ao revalidar cache para o usuário ${userId}:`, error);
+          console.error(
+            `Erro ao revalidar cache para o usuário ${userId}:`,
+            error,
+          );
         }
       }
     }
@@ -63,7 +68,7 @@ export const processScheduledTransactionsTask = schedules.task({
 
     if (duePending.length > 0) {
       await prisma.transaction.updateMany({
-        where: { id: { in: duePending.map((t) => t.id) } },
+        where: { id: { in: duePending.map(t => t.id) } },
         data: { status: TransactionStatus.SCHEDULED_PAID },
       });
 
@@ -75,7 +80,10 @@ export const processScheduledTransactionsTask = schedules.task({
             body: JSON.stringify({ userId: t.userId }),
           });
         } catch (error) {
-          console.error(`Erro ao revalidar cache do usuário ${t.userId}:`, error);
+          console.error(
+            `Erro ao revalidar cache do usuário ${t.userId}:`,
+            error,
+          );
         }
 
         await triggerTransactionUpdate(t.userId, 'updated', t);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { XIcon, ArrowLeft, Loader2 } from 'lucide-react';
+import { XIcon, ArrowLeft } from 'lucide-react';
 import { HomeCard } from '../../sections/dashboard/DashboardContent/ui/DashboardCard';
 import { BackdropModal } from '../BackdropModal';
 import { CategoryForm } from '../forms/CategoryForm';
@@ -37,6 +37,7 @@ export function CardCreateHome({
 
   const isIncome = type === 'INCOME';
 
+  /* Chama a action faz as verificacoes e fecha o card de criar Transaction */
   const handleCreateTransaction = (data: {
     type: 'INCOME' | 'OUTCOME';
     amount: number;
@@ -61,6 +62,7 @@ export function CardCreateHome({
     });
   };
 
+  /* Chama a action faz as verificacoes e fecha o card de criar categoria */
   const handleCreateCategory = (data: {
     name: string;
     type: 'INCOME' | 'OUTCOME';
@@ -79,6 +81,7 @@ export function CardCreateHome({
       setView('TRANSACTION');
     });
   };
+
 
   return (
     <BackdropModal isOpen={isOpen} onClose={handleClose}>

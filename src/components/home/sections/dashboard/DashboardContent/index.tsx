@@ -15,7 +15,7 @@ export async function DashboardContent({ activeTab }: DashboardContentProps) {
   const [transactions, categories, session] = await Promise.all([
     getAuthedTransactions(),
     getAuthedCategories(),
-    getSession(), // Retorna o objeto com o userId (ex: session.userId)
+    getSession(),
   ]);
 
   const userId = session?.userId || '';
