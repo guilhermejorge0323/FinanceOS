@@ -89,7 +89,7 @@ export class TransactionService {
 
     if (recurrence !== RecurrenceOption.NONE) {
       const futureTransactions = [];
-      const occorrences = recurrence === RecurrenceOption.MONTHLY ? 12 : 3;
+      const occorrences = recurrence === RecurrenceOption.MONTHLY ? 6 : 3;
       const now = new Date();
 
       for (let i = 1; i <= occorrences; i++) {

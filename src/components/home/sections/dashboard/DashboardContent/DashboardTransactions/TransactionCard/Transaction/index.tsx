@@ -1,11 +1,11 @@
 'use client';
 
 import { deleteTransactionAction } from '@/actions/transaction/delete-transaction-action';
-import { renderStatusChip } from '@/helper/renderStatusChip';
+import { renderRecurrenceChip, renderStatusChip } from '@/helper/renderChip';
 import { getCategoryIcon } from '@/utils/category-icons';
 import { formatCurrency } from '@/utils/format-currency';
 import { formatStringDate } from '@/utils/formatStringDate';
-import { TransactionStatus } from '@prisma/client';
+import { RecurrenceOption, TransactionStatus } from '@prisma/client';
 import clsx from 'clsx';
 import { Loader2, Trash2Icon } from 'lucide-react';
 import { useTransition } from 'react';
@@ -19,6 +19,7 @@ type TransactionProps = {
     date: Date;
     category?: { name: string; icon: string } | null;
     status: TransactionStatus;
+    recurrence: RecurrenceOption;
   };
 };
 
@@ -37,8 +38,6 @@ export function Transaction({ type, data }: TransactionProps) {
     });
   };
 
-
-
   return (
     <div className='group px-3 sm:px-5 py-3 flex items-center justify-between gap-2 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors'>
       <div className='flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1'>
@@ -55,8 +54,8 @@ export function Transaction({ type, data }: TransactionProps) {
               {data.category?.name}
             </span>
 
-
             {renderStatusChip(data.status)}
+            {renderRecurrenceChip(data.recurrence)}
 
             <span className='text-[9px] text-slate-400 dark:text-slate-500 whitespace-nowrap shrink-0'>
               {formatStringDate(data.date)}

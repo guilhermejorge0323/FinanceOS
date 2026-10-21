@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Sidebar } from '@/components/home/sidebar';
 import { Header } from '@/components/home/header';
 import { TabProvider } from '@/components/home/context/homeContext';
+import { Toaster } from 'sonner';
 
 export default function HomeLayout({
   children,
@@ -24,6 +25,7 @@ export default function HomeLayout({
           <Header onOpenSidebar={() => setIsSidebarOpen(true)} />
 
           <main className='flex-1 p-4 lg:p-6'>{children}</main>
+          <Toaster richColors position='bottom-right'/>
         </div>
       </div>
     </TabProvider>

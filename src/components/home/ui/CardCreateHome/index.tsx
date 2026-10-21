@@ -9,6 +9,7 @@ import { TransactionForm, CategoryOption } from '../forms/TransactionForm';
 import { createTransactionAction } from '@/actions/transaction/create-transaction-action';
 import { createCategoryAction } from '@/actions/category/create-category-action';
 import { DashboardMode } from '@/utils/calculate-financial-summary';
+import { toast } from 'sonner';
 
 type CardCreateHomeProps = {
   type: 'INCOME' | 'OUTCOME';
@@ -48,6 +49,8 @@ export function CardCreateHome({
     recurrence?: 'NONE' | 'MONTHLY' | 'YEARLY';
     parentId?: string;
   }) => {
+    const recurrencyType = data.recurrence === 'MONTHLY' ? "Mensal" : "Anual";
+
     setServerError(null);
 
     startTransition(async () => {
@@ -59,6 +62,11 @@ export function CardCreateHome({
       }
 
       handleClose();
+      if(data.recurrence !== 'NONE') {
+        toast.success(`Transação com recorrencia ${recurrencyType} criada com sucesso`, { duration: 6000 });
+      }else {
+        toast.success('Transação criada com sucesso', { duration: 6000 });
+      }
     });
   };
 
@@ -81,7 +89,6 @@ export function CardCreateHome({
       setView('TRANSACTION');
     });
   };
-
 
   return (
     <BackdropModal isOpen={isOpen} onClose={handleClose}>
